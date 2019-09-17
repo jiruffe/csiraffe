@@ -1,4 +1,5 @@
-﻿/*
+﻿#region License
+/*
  *    Copyright 2019 Jiruffe
  *
  *    Licensed under the Apache License, Version 2.0 (the "License");
@@ -13,6 +14,11 @@
  *    See the License for the specific language governing permissions and
  *    limitations under the License.
  */
+#endregion
+
+using System;
+
+using Jiruffe.CSiraffe.Linq;
 
 namespace Jiruffe.CSiraffe {
 
@@ -54,7 +60,7 @@ namespace Jiruffe.CSiraffe {
         /// <summary>
         /// Directly deserializes JSON <see cref="string"/> to <see cref="object"/>.
         /// </summary>
-        /// <typeparam name="T">The target <see cref="System.Type"/>.</typeparam>
+        /// <typeparam name="T">The target <see cref="Type"/>.</typeparam>
         /// <param name="json">The JSON <see cref="string"/> to be deserialized.</param>
         /// <returns>The <see cref="object"/> deserialized.</returns>
         public static T Parse<T>(string json) {

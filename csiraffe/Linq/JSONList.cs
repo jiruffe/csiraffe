@@ -1,4 +1,5 @@
-﻿/*
+﻿#region License
+/*
  *    Copyright 2019 Jiruffe
  *
  *    Licensed under the Apache License, Version 2.0 (the "License");
@@ -13,15 +14,20 @@
  *    See the License for the specific language governing permissions and
  *    limitations under the License.
  */
+#endregion
 
 using System;
 
-namespace Jiruffe.CSiraffe
-{
-    public class JSONElement
-    {
-        public JSONElement()
-        {
+namespace Jiruffe.CSiraffe.Linq {
+
+    /// <summary>
+    /// JSON list [].
+    /// </summary>
+    internal sealed class JSONList : JSONElement {
+
+        internal JSONList() {
         }
+
     }
+
 }

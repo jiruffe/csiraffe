@@ -5,6 +5,6 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <Folder Include="model\" />
+    <Folder Include="Linq\" />
   </ItemGroup>
 </Project>
