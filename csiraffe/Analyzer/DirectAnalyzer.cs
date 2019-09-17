@@ -18,40 +18,17 @@
 
 using System;
 
-using Jiruffe.CSiraffe.Utility;
+namespace Jiruffe.CSiraffe.Analyzer {
 
-namespace Jiruffe.CSiraffe.Linq {
+    internal static class DirectAnalyzer {
 
-    /// <summary>
-    /// JSON primitive value such as integer, string...
-    /// </summary>
-    internal sealed class JSONPrimitive : JSONElement {
-
-        #region Fields
-
-        private readonly object _Value;
-
-        #endregion
-
-        #region Indexers
-        #endregion
-
-        #region Accessors
-        #endregion
-
-        #region Constructors
-
-        internal JSONPrimitive() : this(Defaults.Primitive) {
+        internal static string Analyze(object obj) {
+            return default;
         }
 
-        internal JSONPrimitive(in object obj) {
-            _Value = obj;
+        internal static T Analyze<T>(string str) {
+            return default;
         }
-
-        #endregion
-
-        #region Methods
-        #endregion
 
     }
 

@@ -17,42 +17,20 @@
 #endregion
 
 using System;
-using System.Collections.Generic;
 
-using Jiruffe.CSiraffe.Utility;
+using Jiruffe.CSiraffe.Linq;
 
-namespace Jiruffe.CSiraffe.Linq {
+namespace Jiruffe.CSiraffe.Analyzer {
 
-    /// <summary>
-    /// JSON map {}.
-    /// </summary>
-    internal sealed class JSONMap : JSONElement {
+    internal static class ObjectAnalyzer {
 
-        #region Fields
-
-        private readonly IDictionary<object, JSONElement> _Sub_Elements;
-
-        #endregion
-
-        #region Indexers
-        #endregion
-
-        #region Accessors
-        #endregion
-
-        #region Constructors
-
-        internal JSONMap() : this(Defaults<object, JSONElement>.Dictionary) {
+        internal static JSONElement Analyze(object obj) {
+            return default;
         }
 
-        internal JSONMap(in IDictionary<object, JSONElement> elements) {
-            _Sub_Elements = elements;
+        internal static T Analyze<T>(JSONElement element) {
+            return default;
         }
-
-        #endregion
-
-        #region Methods
-        #endregion
 
     }
 

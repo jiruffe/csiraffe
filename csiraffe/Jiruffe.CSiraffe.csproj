@@ -6,5 +6,8 @@
 
   <ItemGroup>
     <Folder Include="Linq\" />
+    <Folder Include="Analyzer\" />
+    <Folder Include="Exception\" />
+    <Folder Include="Utility\" />
   </ItemGroup>
 </Project>

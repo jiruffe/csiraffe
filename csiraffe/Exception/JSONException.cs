@@ -17,41 +17,31 @@
 #endregion
 
 using System;
-using System.Collections.Generic;
 
-using Jiruffe.CSiraffe.Utility;
-
-namespace Jiruffe.CSiraffe.Linq {
+namespace Jiruffe.CSiraffe.Exception {
 
     /// <summary>
-    /// JSON map {}.
+    /// Represents <see cref="ApplicationException"/> occurred during JSON conversion.
     /// </summary>
-    internal sealed class JSONMap : JSONElement {
-
-        #region Fields
-
-        private readonly IDictionary<object, JSONElement> _Sub_Elements;
-
-        #endregion
-
-        #region Indexers
-        #endregion
-
-        #region Accessors
-        #endregion
+    public abstract class JSONException : ApplicationException {
 
         #region Constructors
 
-        internal JSONMap() : this(Defaults<object, JSONElement>.Dictionary) {
+        /// <summary>
+        /// Initializes a new instance of the <see cref="JSONException"/> class.
+        /// </summary>
+        protected JSONException() : base() {
+
         }
 
-        internal JSONMap(in IDictionary<object, JSONElement> elements) {
-            _Sub_Elements = elements;
+        /// <summary>
+        /// Initializes a new instance of the <see cref="JSONException"/> class with a specified error message.
+        /// </summary>
+        /// <param name="message">A message that describes the error.</param>
+        protected JSONException(string message) : base(message) {
+
         }
 
-        #endregion
-
-        #region Methods
         #endregion
 
     }

@@ -17,41 +17,31 @@
 #endregion
 
 using System;
-using System.Collections.Generic;
 
-using Jiruffe.CSiraffe.Utility;
-
-namespace Jiruffe.CSiraffe.Linq {
+namespace Jiruffe.CSiraffe.Exception {
 
     /// <summary>
-    /// JSON map {}.
+    /// Represents <see cref="JSONException"/> occurred if operation is not acceptable.
     /// </summary>
-    internal sealed class JSONMap : JSONElement {
-
-        #region Fields
-
-        private readonly IDictionary<object, JSONElement> _Sub_Elements;
-
-        #endregion
-
-        #region Indexers
-        #endregion
-
-        #region Accessors
-        #endregion
+    public class UnsupportedOperationException : JSONException {
 
         #region Constructors
 
-        internal JSONMap() : this(Defaults<object, JSONElement>.Dictionary) {
+        /// <summary>
+        /// Initializes a new instance of the <see cref="UnsupportedOperationException"/> class.
+        /// </summary>
+        public UnsupportedOperationException() : base() {
+
         }
 
-        internal JSONMap(in IDictionary<object, JSONElement> elements) {
-            _Sub_Elements = elements;
+        /// <summary>
+        /// Initializes a new instance of the <see cref="UnsupportedOperationException"/> class with a specified error message.
+        /// </summary>
+        /// <param name="message">A message that describes the error.</param>
+        public UnsupportedOperationException(string message) : base(message) {
+
         }
 
-        #endregion
-
-        #region Methods
         #endregion
 
     }

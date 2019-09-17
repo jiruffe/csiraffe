@@ -17,6 +17,7 @@
 #endregion
 
 using System;
+using System.Collections.Generic;
 
 namespace Jiruffe.CSiraffe.Linq {
 
@@ -25,10 +26,29 @@ namespace Jiruffe.CSiraffe.Linq {
     /// </summary>
     internal sealed class JSONVoid : JSONElement {
 
+        #region Fields
+
         /// <summary>
         /// Lazy-Load singleton instance of <see cref="JSONVoid"/>.
         /// </summary>
         private static readonly Lazy<JSONVoid> _Lazy_Instance;
+
+        #endregion
+
+        #region Accessors
+
+        /// <summary>
+        /// Lazy-Load singleton instance of <see cref="JSONVoid"/>.
+        /// </summary>
+        internal static JSONVoid Instance {
+            get {
+                return _Lazy_Instance.Value;
+            }
+        }
+
+        #endregion
+
+        #region Static Constructors
 
         /// <summary>
         /// Static constructor. Initialize the Lazy-Load singleton instance.
@@ -37,20 +57,22 @@ namespace Jiruffe.CSiraffe.Linq {
             _Lazy_Instance = new Lazy<JSONVoid>(() => new JSONVoid());
         }
 
-        /// <summary>
-        /// Lazy-Load singleton instance of <see cref="JSONVoid"/>.
-        /// </summary>
-        internal JSONVoid Instance {
-            get {
-                return _Lazy_Instance.Value;
-            }
-        }
+        #endregion
+
+
+        #region Constructors
 
         /// <summary>
         /// Private constructor.
         /// </summary>
         private JSONVoid() {
         }
+
+        #endregion
+
+        #region Methods
+
+        #endregion
 
     }
 

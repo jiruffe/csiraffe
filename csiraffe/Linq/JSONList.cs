@@ -17,6 +17,9 @@
 #endregion
 
 using System;
+using System.Collections.Generic;
+
+using Jiruffe.CSiraffe.Utility;
 
 namespace Jiruffe.CSiraffe.Linq {
 
@@ -25,8 +28,31 @@ namespace Jiruffe.CSiraffe.Linq {
     /// </summary>
     internal sealed class JSONList : JSONElement {
 
-        internal JSONList() {
+        #region Fields
+
+        private readonly ICollection<JSONElement> _Sub_Elements;
+
+        #endregion
+
+        #region Indexers
+        #endregion
+
+        #region Accessors
+        #endregion
+
+        #region Constructors
+
+        internal JSONList() : this(Defaults<JSONElement>.Collection) {
         }
+
+        internal JSONList(in ICollection<JSONElement> elements) {
+            _Sub_Elements = elements;
+        }
+
+        #endregion
+
+        #region Methods
+        #endregion
 
     }
 

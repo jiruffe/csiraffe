@@ -18,6 +18,8 @@
 
 using System;
 
+using Jiruffe.CSiraffe.Analyzer;
+using Jiruffe.CSiraffe.Exception;
 using Jiruffe.CSiraffe.Linq;
 
 namespace Jiruffe.CSiraffe {
@@ -33,38 +35,104 @@ namespace Jiruffe.CSiraffe {
         /// <summary>
         /// Serializes <see cref="object"/> to <see cref="JSONElement"/>.
         /// </summary>
-        /// <param name="o">The <see cref="object"/> to be serialized.</param>
+        /// <param name="obj">The <see cref="object"/> to be serialized.</param>
         /// <returns>The <see cref="JSONElement"/> serialized.</returns>
-        public static JSONElement Serialize(object o) {
-            return default;
+        public static JSONElement Serialize(object obj) {
+            if (obj is JSONElement) {
+                return obj as JSONElement;
+            }
+            return ObjectAnalyzer.Analyze(obj);
         }
 
         /// <summary>
         /// Deserializes JSON <see cref="string"/> to <see cref="JSONElement"/>.
         /// </summary>
-        /// <param name="json">The JSON <see cref="string"/> to be deserialized.</param>
+        /// <param name="str">The JSON <see cref="string"/> to be deserialized.</param>
         /// <returns>The <see cref="JSONElement"/> deserialized.</returns>
-        public static JSONElement Deserialize(string json) {
-            return default;
+        public static JSONElement Deserialize(string str) {
+            return StringAnalyzer.Analyze(str);
         }
 
         /// <summary>
         /// Directly serializes <see cref="object"/> to JSON <see cref="string"/>.
         /// </summary>
-        /// <param name="o">The <see cref="object"/> to be serialized.</param>
+        /// <param name="obj">The <see cref="object"/> to be serialized.</param>
         /// <returns>The JSON <see cref="string"/> serialized.</returns>
-        public static string Stringify(object o) {
-            return default;
+        public static string Stringify(object obj) {
+            if (obj is string) {
+                return obj as string;
+            }
+            if (obj is JSONElement) {
+                return StringAnalyzer.Analyze(obj as JSONElement);
+            }
+            return DirectAnalyzer.Analyze(obj);
         }
 
         /// <summary>
         /// Directly deserializes JSON <see cref="string"/> to <see cref="object"/>.
         /// </summary>
         /// <typeparam name="T">The target <see cref="Type"/>.</typeparam>
-        /// <param name="json">The JSON <see cref="string"/> to be deserialized.</param>
+        /// <param name="str">The JSON <see cref="string"/> to be deserialized.</param>
         /// <returns>The <see cref="object"/> deserialized.</returns>
-        public static T Parse<T>(string json) {
-            return default;
+        public static T Parse<T>(string str) {
+            if (typeof(T).IsAssignableFrom(typeof(string))) {
+                return (T)(object)str;
+            }
+            if (typeof(T) == typeof(JSONElement)) {
+                return (T)(object)StringAnalyzer.Analyze(str);
+            }
+            if (typeof(T).IsSubclassOf(typeof(JSONElement))) {
+                throw new UnexpectedTypeException("Use JSON.Deserialize(string) instead.");
+            }
+            return DirectAnalyzer.Analyze<T>(str);
+        }
+
+    }
+
+    /// <summary>
+    /// Extension Methods for JSON conversion to <see cref="object"/> and <see cref="string"/>.
+    /// </summary>
+    public static class JSONExtensionMethods {
+
+        /// <summary>
+        /// Serializes <see cref="object"/> to <see cref="JSONElement"/>.
+        /// <seealso cref="JSON.Serialize(object)"/>
+        /// </summary>
+        /// <param name="obj">The <see cref="object"/> to be serialized.</param>
+        /// <returns>The <see cref="JSONElement"/> serialized.</returns>
+        public static JSONElement Serialize(this object obj) {
+            return JSON.Serialize(obj);
+        }
+
+        /// <summary>
+        /// Deserializes JSON <see cref="string"/> to <see cref="JSONElement"/>.
+        /// <seealso cref="JSON.Deserialize(string)"/>
+        /// </summary>
+        /// <param name="str">The JSON <see cref="string"/> to be deserialized.</param>
+        /// <returns>The <see cref="JSONElement"/> deserialized.</returns>
+        public static JSONElement Deserialize(this string str) {
+            return JSON.Deserialize(str);
+        }
+
+        /// <summary>
+        /// Directly serializes <see cref="object"/> to JSON <see cref="string"/>.
+        /// <seealso cref="JSON.Stringify(object)"/>
+        /// </summary>
+        /// <param name="obj">The <see cref="object"/> to be serialized.</param>
+        /// <returns>The JSON <see cref="string"/> serialized.</returns>
+        public static string Stringify(this object obj) {
+            return JSON.Stringify(obj);
+        }
+
+        /// <summary>
+        /// Directly deserializes JSON <see cref="string"/> to <see cref="object"/>.
+        /// <seealso cref="JSON.Parse{T}(string)"/>
+        /// </summary>
+        /// <typeparam name="T">The target <see cref="Type"/>.</typeparam>
+        /// <param name="str">The JSON <see cref="string"/> to be deserialized.</param>
+        /// <returns>The <see cref="object"/> deserialized.</returns>
+        public static T Parse<T>(this string str) {
+            return JSON.Parse<T>(str);
         }
 
     }
