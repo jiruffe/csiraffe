@@ -22,7 +22,7 @@ using System.Collections.Generic;
 namespace Jiruffe.CSiraffe.Linq.Internal {
 
     /// <summary>
-    /// JSON <c>null</c>, <c>undefined</c> or <c>NaN</c>.
+    /// JSON null, undefined or NaN.
     /// </summary>
     internal sealed class JSONVoid : JSONElement {
 

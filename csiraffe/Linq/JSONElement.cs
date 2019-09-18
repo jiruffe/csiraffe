@@ -93,8 +93,8 @@ namespace Jiruffe.CSiraffe.Linq {
         #region Accessors
 
         /// <summary>
-        /// Returns <see cref="JSONVoid.Instance"/> which represents a <c>void</c> element,
-        /// also known as <c>null</c>, <c>undefined</c> or <c>NaN</c> in JSON.
+        /// Returns <see cref="JSONVoid.Instance"/> which represents a void element,
+        /// also known as null, undefined or NaN in JSON.
         /// </summary>
         /// <returns><see cref="JSONVoid.Instance"/></returns>
         public static JSONElement Void {
@@ -980,7 +980,7 @@ namespace Jiruffe.CSiraffe.Linq {
         Primitive,
 
         /// <summary>
-        /// JSON <c>null</c>, <c>undefined</c> or <c>NaN</c>.
+        /// JSON null, undefined or NaN.
         /// <seealso cref="JSONVoid"/>
         /// </summary>
         Void
