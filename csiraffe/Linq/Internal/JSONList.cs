@@ -26,11 +26,11 @@ namespace Jiruffe.CSiraffe.Linq.Internal {
     /// <summary>
     /// JSON list [].
     /// </summary>
-    internal sealed class JSONList : JSONElement {
+    internal sealed class JSONList : JSONEntity {
 
         #region Fields
 
-        private readonly IList<JSONElement> _Sub_Elements;
+        private readonly IList<JSONEntity> _Sub_Entities;
 
         #endregion
 
@@ -42,19 +42,19 @@ namespace Jiruffe.CSiraffe.Linq.Internal {
 
         #region Constructors
 
-        internal JSONList() : this(Defaults<JSONElement>.List) {
+        internal JSONList() : this(Defaults<JSONEntity>.List) {
         }
 
-        internal JSONList(in IList<JSONElement> elements) {
-            _Sub_Elements = elements;
+        internal JSONList(in IList<JSONEntity> entities) {
+            _Sub_Entities = entities;
         }
 
         #endregion
 
         #region Methods
 
-        public override IList<JSONElement> AsList() {
-            return _Sub_Elements;
+        public override IList<JSONEntity> AsList() {
+            return _Sub_Entities;
         }
 
         #endregion

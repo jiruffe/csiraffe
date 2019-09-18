@@ -26,11 +26,11 @@ namespace Jiruffe.CSiraffe.Linq.Internal {
     /// <summary>
     /// JSON dictionary {}.
     /// </summary>
-    internal sealed class JSONDictionary : JSONElement {
+    internal sealed class JSONDictionary : JSONEntity {
 
         #region Fields
 
-        private readonly IDictionary<string, JSONElement> _Sub_Elements;
+        private readonly IDictionary<string, JSONEntity> _Sub_Entities;
 
         #endregion
 
@@ -42,19 +42,19 @@ namespace Jiruffe.CSiraffe.Linq.Internal {
 
         #region Constructors
 
-        internal JSONDictionary() : this(Defaults<string, JSONElement>.Dictionary) {
+        internal JSONDictionary() : this(Defaults<string, JSONEntity>.Dictionary) {
         }
 
-        internal JSONDictionary(in IDictionary<string, JSONElement> elements) {
-            _Sub_Elements = elements;
+        internal JSONDictionary(in IDictionary<string, JSONEntity> entities) {
+            _Sub_Entities = entities;
         }
 
         #endregion
 
         #region Methods
 
-        public override IDictionary<string, JSONElement> AsDictionary() {
-            return _Sub_Elements;
+        public override IDictionary<string, JSONEntity> AsDictionary() {
+            return _Sub_Entities;
         }
 
         #endregion

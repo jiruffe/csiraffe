@@ -25,7 +25,7 @@ namespace Jiruffe.CSiraffe.Linq.Internal {
     /// <summary>
     /// JSON primitive value such as integer, string...
     /// </summary>
-    internal sealed class JSONPrimitive : JSONElement {
+    internal sealed class JSONPrimitive : JSONEntity {
 
         #region Fields
 

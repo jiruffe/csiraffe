@@ -24,7 +24,7 @@ namespace Jiruffe.CSiraffe.Linq.Internal {
     /// <summary>
     /// JSON null, undefined or NaN.
     /// </summary>
-    internal sealed class JSONVoid : JSONElement {
+    internal sealed class JSONVoid : JSONEntity {
 
         #region Fields
 

@@ -33,23 +33,23 @@ namespace Jiruffe.CSiraffe {
     public static class JSON {
 
         /// <summary>
-        /// Serializes <see cref="object"/> to <see cref="JSONElement"/>.
+        /// Serializes <see cref="object"/> to <see cref="JSONEntity"/>.
         /// </summary>
         /// <param name="obj">The <see cref="object"/> to be serialized.</param>
-        /// <returns>The <see cref="JSONElement"/> serialized.</returns>
-        public static JSONElement Serialize(object obj) {
-            if (obj is JSONElement) {
-                return obj as JSONElement;
+        /// <returns>The <see cref="JSONEntity"/> serialized.</returns>
+        public static JSONEntity Serialize(object obj) {
+            if (obj is JSONEntity) {
+                return obj as JSONEntity;
             }
             return ObjectAnalyzer.Analyze(obj);
         }
 
         /// <summary>
-        /// Deserializes JSON <see cref="string"/> to <see cref="JSONElement"/>.
+        /// Deserializes JSON <see cref="string"/> to <see cref="JSONEntity"/>.
         /// </summary>
         /// <param name="str">The JSON <see cref="string"/> to be deserialized.</param>
-        /// <returns>The <see cref="JSONElement"/> deserialized.</returns>
-        public static JSONElement Deserialize(string str) {
+        /// <returns>The <see cref="JSONEntity"/> deserialized.</returns>
+        public static JSONEntity Deserialize(string str) {
             return StringAnalyzer.Analyze(str);
         }
 
@@ -62,8 +62,8 @@ namespace Jiruffe.CSiraffe {
             if (obj is string) {
                 return obj as string;
             }
-            if (obj is JSONElement) {
-                return StringAnalyzer.Analyze(obj as JSONElement);
+            if (obj is JSONEntity) {
+                return StringAnalyzer.Analyze(obj as JSONEntity);
             }
             return DirectAnalyzer.Analyze(obj);
         }
@@ -78,10 +78,10 @@ namespace Jiruffe.CSiraffe {
             if (typeof(T).IsAssignableFrom(typeof(string))) {
                 return (T)(object)str;
             }
-            if (typeof(T) == typeof(JSONElement)) {
+            if (typeof(T) == typeof(JSONEntity)) {
                 return (T)(object)StringAnalyzer.Analyze(str);
             }
-            if (typeof(T).IsSubclassOf(typeof(JSONElement))) {
+            if (typeof(T).IsSubclassOf(typeof(JSONEntity))) {
                 throw new UnexpectedTypeException("Use JSON.Deserialize(string) instead.");
             }
             return DirectAnalyzer.Analyze<T>(str);
@@ -95,22 +95,22 @@ namespace Jiruffe.CSiraffe {
     public static class JSONExtensionMethods {
 
         /// <summary>
-        /// Serializes <see cref="object"/> to <see cref="JSONElement"/>.
+        /// Serializes <see cref="object"/> to <see cref="JSONEntity"/>.
         /// <seealso cref="JSON.Serialize(object)"/>
         /// </summary>
         /// <param name="obj">The <see cref="object"/> to be serialized.</param>
-        /// <returns>The <see cref="JSONElement"/> serialized.</returns>
-        public static JSONElement Serialize(this object obj) {
+        /// <returns>The <see cref="JSONEntity"/> serialized.</returns>
+        public static JSONEntity Serialize(this object obj) {
             return JSON.Serialize(obj);
         }
 
         /// <summary>
-        /// Deserializes JSON <see cref="string"/> to <see cref="JSONElement"/>.
+        /// Deserializes JSON <see cref="string"/> to <see cref="JSONEntity"/>.
         /// <seealso cref="JSON.Deserialize(string)"/>
         /// </summary>
         /// <param name="str">The JSON <see cref="string"/> to be deserialized.</param>
-        /// <returns>The <see cref="JSONElement"/> deserialized.</returns>
-        public static JSONElement Deserialize(this string str) {
+        /// <returns>The <see cref="JSONEntity"/> deserialized.</returns>
+        public static JSONEntity Deserialize(this string str) {
             return JSON.Deserialize(str);
         }
 

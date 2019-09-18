@@ -23,26 +23,26 @@ using Jiruffe.CSiraffe.Linq;
 namespace Jiruffe.CSiraffe.Analyzer {
 
     /// <summary>
-    /// <see cref="object"/> &lt;=&gt; <see cref="JSONElement"/> conversion.
+    /// <see cref="object"/> &lt;=&gt; <see cref="JSONEntity"/> conversion.
     /// </summary>
     internal static class ObjectAnalyzer {
 
         /// <summary>
-        /// <see cref="object"/> =&gt; <see cref="JSONElement"/> conversion.
+        /// <see cref="object"/> =&gt; <see cref="JSONEntity"/> conversion.
         /// </summary>
         /// <param name="obj">The <see cref="object"/> to be converted.</param>
-        /// <returns>The <see cref="JSONElement"/> converted.</returns>
-        internal static JSONElement Analyze(object obj) {
+        /// <returns>The <see cref="JSONEntity"/> converted.</returns>
+        internal static JSONEntity Analyze(object obj) {
             return default;
         }
 
         /// <summary>
-        /// <see cref="JSONElement"/> =&gt; <see cref="object"/> conversion.
+        /// <see cref="JSONEntity"/> =&gt; <see cref="object"/> conversion.
         /// </summary>
         /// <typeparam name="T">The target <see cref="Type"/>.</typeparam>
-        /// <param name="element">The <see cref="JSONElement"/> to be converted.</param>
+        /// <param name="entity">The <see cref="JSONEntity"/> to be converted.</param>
         /// <returns>The target <see cref="Type"/> <see cref="object"/> converted.</returns>
-        internal static T Analyze<T>(JSONElement element) {
+        internal static T Analyze<T>(JSONEntity entity) {
             return default;
         }
 

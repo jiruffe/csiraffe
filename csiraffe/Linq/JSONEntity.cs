@@ -28,9 +28,9 @@ using Jiruffe.CSiraffe.Utility;
 namespace Jiruffe.CSiraffe.Linq {
 
     /// <summary>
-    /// Represents JSON element including JSON dictionary {}, list [], or primitive value such as integer, string...
+    /// Represents JSON entity including JSON dictionary {}, list [], or primitive value such as integer, string...
     /// </summary>
-    public abstract class JSONElement : IConvertible, IDictionary<string, JSONElement>, IList<JSONElement> {
+    public abstract class JSONEntity : IConvertible, IDictionary<string, JSONEntity>, IList<JSONEntity> {
 
         #region Fields
         #endregion
@@ -40,14 +40,14 @@ namespace Jiruffe.CSiraffe.Linq {
         #region Implement IDictionary
 
         /// <summary>
-        /// Gets or sets the element with the specified key.
+        /// Gets or sets the entity with the specified key.
         /// </summary>
-        /// <param name="key">The key of the element to get or set.</param>
-        /// <returns>The element with the specified key.</returns>
+        /// <param name="key">The key of the entity to get or set.</param>
+        /// <returns>The entity with the specified key.</returns>
         /// <exception cref="ArgumentNullException"><paramref name="key">key</paramref> is null.</exception>
         /// <exception cref="KeyNotFoundException">The property is retrieved and <paramref name="key">key</paramref> is not found.</exception>
         /// <exception cref="NotSupportedException">The property is set and the <see cref="IDictionary{TKey, TValue}"/> is read-only.</exception>
-        JSONElement IDictionary<string, JSONElement>.this[string key] {
+        JSONEntity IDictionary<string, JSONEntity>.this[string key] {
             get {
                 if (IsDictionary) {
                     return AsDictionary()[key];
@@ -66,13 +66,13 @@ namespace Jiruffe.CSiraffe.Linq {
         #region Implement IList
 
         /// <summary>
-        /// Gets or sets the element at the specified index.
+        /// Gets or sets the entity at the specified index.
         /// </summary>
-        /// <param name="index">The zero-based index of the element to get or set.</param>
-        /// <returns>The element at the specified index.</returns>
+        /// <param name="index">The zero-based index of the entity to get or set.</param>
+        /// <returns>The entity at the specified index.</returns>
         /// <exception cref="ArgumentOutOfRangeException"><paramref name="index">index</paramref> is not a valid index in the <see cref="IList{T}"/>.</exception>
         /// <exception cref="NotSupportedException">The property is set and the <see cref="IList{T}"/> is read-only.</exception>
-        JSONElement IList<JSONElement>.this[int index] {
+        JSONEntity IList<JSONEntity>.this[int index] {
             get {
                 if (IsList) {
                     return AsList()[index];
@@ -93,20 +93,20 @@ namespace Jiruffe.CSiraffe.Linq {
         #region Accessors
 
         /// <summary>
-        /// Returns <see cref="JSONVoid.Instance"/> which represents a void element,
+        /// Returns <see cref="JSONVoid.Instance"/> which represents a void entity,
         /// also known as null, undefined or NaN in JSON.
         /// </summary>
         /// <returns><see cref="JSONVoid.Instance"/></returns>
-        public static JSONElement Void {
+        public static JSONEntity Void {
             get {
                 return JSONVoid.Instance;
             }
         }
 
         /// <summary>
-        /// Indicate whether this element is empty.
+        /// Indicate whether this entity is empty.
         /// </summary>
-        /// <returns>true if this element is empty; otherwise, false.</returns>
+        /// <returns>true if this entity is empty; otherwise, false.</returns>
         public bool IsEmpty {
             get {
                 if (IsDictionary) {
@@ -126,9 +126,9 @@ namespace Jiruffe.CSiraffe.Linq {
         }
 
         /// <summary>
-        /// Indicate whether this element is void.
+        /// Indicate whether this entity is void.
         /// </summary>
-        /// <returns>true if this element is void; otherwise, false.</returns>
+        /// <returns>true if this entity is void; otherwise, false.</returns>
         public bool IsVoid {
             get {
                 return this is JSONVoid;
@@ -136,9 +136,9 @@ namespace Jiruffe.CSiraffe.Linq {
         }
 
         /// <summary>
-        /// Indicate whether this element is an instance of <see cref="JSONDictionary"/>.
+        /// Indicate whether this entity is an instance of <see cref="JSONDictionary"/>.
         /// </summary>
-        /// <returns>true if this element is an instance of <see cref="JSONDictionary"/>; otherwise, false.</returns>
+        /// <returns>true if this entity is an instance of <see cref="JSONDictionary"/>; otherwise, false.</returns>
         public bool IsDictionary {
             get {
                 return this is JSONDictionary;
@@ -146,9 +146,9 @@ namespace Jiruffe.CSiraffe.Linq {
         }
 
         /// <summary>
-        /// Indicate whether this element is an instance of <see cref="JSONList"/>.
+        /// Indicate whether this entity is an instance of <see cref="JSONList"/>.
         /// </summary>
-        /// <returns>true if this element is an instance of <see cref="JSONList"/>; otherwise, false.</returns>
+        /// <returns>true if this entity is an instance of <see cref="JSONList"/>; otherwise, false.</returns>
         public bool IsList {
             get {
                 return this is JSONList;
@@ -156,9 +156,9 @@ namespace Jiruffe.CSiraffe.Linq {
         }
 
         /// <summary>
-        /// Indicate whether this element is an instance of <see cref="JSONPrimitive"/>.
+        /// Indicate whether this entity is an instance of <see cref="JSONPrimitive"/>.
         /// </summary>
-        /// <returns>true if this element is an instance of <see cref="JSONPrimitive"/>; otherwise, false.</returns>
+        /// <returns>true if this entity is an instance of <see cref="JSONPrimitive"/>; otherwise, false.</returns>
         public bool IsPrimitive {
             get {
                 return this is JSONPrimitive;
@@ -166,24 +166,24 @@ namespace Jiruffe.CSiraffe.Linq {
         }
 
         /// <summary>
-        /// Get the <see cref="JSONElementType"/> of this element.
+        /// Get the <see cref="JSONEntityType"/> of this entity.
         /// </summary>
-        /// <returns>The <see cref="JSONElementType"/> of this element</returns>
-        public JSONElementType ElementType {
+        /// <returns>The <see cref="JSONEntityType"/> of this entity</returns>
+        public JSONEntityType entityType {
             get {
                 if (IsVoid) {
-                    return JSONElementType.Void;
+                    return JSONEntityType.Void;
                 }
                 if (IsDictionary) {
-                    return JSONElementType.Dictionary;
+                    return JSONEntityType.Dictionary;
                 }
                 if (IsList) {
-                    return JSONElementType.List;
+                    return JSONEntityType.List;
                 }
                 if (IsPrimitive) {
-                    return JSONElementType.Primitive;
+                    return JSONEntityType.Primitive;
                 }
-                return JSONElementType.Unknown;
+                return JSONEntityType.Unknown;
             }
         }
 
@@ -193,7 +193,7 @@ namespace Jiruffe.CSiraffe.Linq {
         /// Gets an <see cref="ICollection{T}"/> containing the keys of the <see cref="IDictionary{TKey, TValue}"/>.
         /// </summary>
         /// <returns>An <see cref="ICollection{T}"/> containing the keys of the object that implements <see cref="IDictionary{TKey, TValue}"/>.</returns>
-        ICollection<string> IDictionary<string, JSONElement>.Keys {
+        ICollection<string> IDictionary<string, JSONEntity>.Keys {
             get {
                 if (IsDictionary) {
                     return AsDictionary().Keys;
@@ -207,7 +207,7 @@ namespace Jiruffe.CSiraffe.Linq {
         /// Gets an <see cref="ICollection{T}"/> containing the values in the <see cref="IDictionary{TKey, TValue}"/>.
         /// </summary>
         /// <returns>An <see cref="ICollection{T}"/> containing the values in the object that implements <see cref="IDictionary{TKey, TValue}"/>.</returns>
-        ICollection<JSONElement> IDictionary<string, JSONElement>.Values {
+        ICollection<JSONEntity> IDictionary<string, JSONEntity>.Values {
             get {
                 if (IsDictionary) {
                     return AsDictionary().Values;
@@ -219,10 +219,10 @@ namespace Jiruffe.CSiraffe.Linq {
         #region Implement IDictionary : ICollection
 
         /// <summary>
-        /// Gets the number of elements contained in the <see cref="ICollection{T}"/>.
+        /// Gets the number of entities contained in the <see cref="ICollection{T}"/>.
         /// </summary>
-        /// <returns>The number of elements contained in the <see cref="ICollection{T}"/>.</returns>
-        int ICollection<KeyValuePair<string, JSONElement>>.Count {
+        /// <returns>The number of entities contained in the <see cref="ICollection{T}"/>.</returns>
+        int ICollection<KeyValuePair<string, JSONEntity>>.Count {
             get {
                 if (IsDictionary) {
                     return AsDictionary().Count;
@@ -235,7 +235,7 @@ namespace Jiruffe.CSiraffe.Linq {
         /// Gets a value indicating whether the <see cref="ICollection{T}"/> is read-only.
         /// </summary>
         /// <returns>true if the <see cref="ICollection{T}"/> is read-only; otherwise, false.</returns>
-        bool ICollection<KeyValuePair<string, JSONElement>>.IsReadOnly {
+        bool ICollection<KeyValuePair<string, JSONEntity>>.IsReadOnly {
             get {
                 if (IsDictionary) {
                     return AsDictionary().IsReadOnly;
@@ -253,10 +253,10 @@ namespace Jiruffe.CSiraffe.Linq {
         #region Implement IList : ICollection
 
         /// <summary>
-        /// Gets the number of elements contained in the <see cref="ICollection{T}"/>.
+        /// Gets the number of entities contained in the <see cref="ICollection{T}"/>.
         /// </summary>
-        /// <returns>The number of elements contained in the <see cref="ICollection{T}"/>.</returns>
-        int ICollection<JSONElement>.Count {
+        /// <returns>The number of entities contained in the <see cref="ICollection{T}"/>.</returns>
+        int ICollection<JSONEntity>.Count {
             get {
                 if (IsList) {
                     return AsList().Count;
@@ -269,7 +269,7 @@ namespace Jiruffe.CSiraffe.Linq {
         /// Gets a value indicating whether the <see cref="ICollection{T}"/> is read-only.
         /// </summary>
         /// <returns>true if the <see cref="ICollection{T}"/> is read-only; otherwise, false.</returns>
-        bool ICollection<JSONElement>.IsReadOnly {
+        bool ICollection<JSONEntity>.IsReadOnly {
             get {
                 if (IsList) {
                     return AsList().IsReadOnly;
@@ -291,22 +291,22 @@ namespace Jiruffe.CSiraffe.Linq {
         /// <para>Use <see cref="New(in object)"/> instead.</para>
         /// </summary>
         /// <returns>What <see cref="Void"/> returns.</returns>
-        [Obsolete("Deprecated. Use JSONElement.New(object) instead.")]
-        public JSONElement New() {
+        [Obsolete("Deprecated. Use JSONentity.New(object) instead.")]
+        public JSONEntity New() {
             return Void;
         }
 
         /// <summary>
-        /// Get a new instance of <see cref="JSONElement"/> with specified original <see cref="object"/>.
+        /// Get a new instance of <see cref="JSONEntity"/> with specified original <see cref="object"/>.
         /// </summary>
         /// <param name="obj">The original <see cref="object"/>.</param>
-        /// <returns>A new instance of <see cref="JSONElement"/> with specified original <see cref="object"/>.</returns>
-        public JSONElement New(in object obj) {
+        /// <returns>A new instance of <see cref="JSONEntity"/> with specified original <see cref="object"/>.</returns>
+        public JSONEntity New(in object obj) {
             if (obj is null) {
                 return New();
             }
-            if (obj is JSONElement) {
-                return (JSONElement)obj;
+            if (obj is JSONEntity) {
+                return (JSONEntity)obj;
             }
             return ObjectAnalyzer.Analyze(obj);
         }
@@ -315,47 +315,47 @@ namespace Jiruffe.CSiraffe.Linq {
         /// Get a new instance of <see cref="JSONList"/>.
         /// </summary>
         /// <returns>A new instance of <see cref="JSONList"/>.</returns>
-        public JSONElement List() {
+        public JSONEntity List() {
             return new JSONList();
         }
 
         /// <summary>
-        /// Get a new instance of <see cref="JSONList"/> with specified sub-elements.
+        /// Get a new instance of <see cref="JSONList"/> with specified sub-entities.
         /// </summary>
-        /// <param name="elements">The sub-elements.</param>
-        /// <returns>A new instance of <see cref="JSONList"/> with specified sub-elements.</returns>
-        public JSONElement List(in IList<JSONElement> elements) {
-            if (elements is null) {
+        /// <param name="entities">The sub-entities.</param>
+        /// <returns>A new instance of <see cref="JSONList"/> with specified sub-entities.</returns>
+        public JSONEntity List(in IList<JSONEntity> entities) {
+            if (entities is null) {
                 return List();
             }
-            return new JSONList(elements);
+            return new JSONList(entities);
         }
 
         /// <summary>
         /// Get a new instance of <see cref="JSONDictionary"/>.
         /// </summary>
         /// <returns>A new instance of <see cref="JSONDictionary"/>.</returns>
-        public JSONElement Dictionary() {
+        public JSONEntity Dictionary() {
             return new JSONDictionary();
         }
 
         /// <summary>
-        /// Get a new instance of <see cref="JSONDictionary"/> with specified sub-elements.
+        /// Get a new instance of <see cref="JSONDictionary"/> with specified sub-entities.
         /// </summary>
-        /// <param name="elements">The sub-elements.</param>
-        /// <returns>A new instance of <see cref="JSONDictionary"/> with specified sub-elements.</returns>
-        public JSONElement Dictionary(in IDictionary<string, JSONElement> elements) {
-            if (elements is null) {
+        /// <param name="entities">The sub-entities.</param>
+        /// <returns>A new instance of <see cref="JSONDictionary"/> with specified sub-entities.</returns>
+        public JSONEntity Dictionary(in IDictionary<string, JSONEntity> entities) {
+            if (entities is null) {
                 return Dictionary();
             }
-            return new JSONDictionary(elements);
+            return new JSONDictionary(entities);
         }
 
         /// <summary>
         /// Get a new instance of <see cref="JSONPrimitive"/>.
         /// </summary>
         /// <returns>A new instance of <see cref="JSONPrimitive"/>.</returns>
-        public JSONElement Primitive() {
+        public JSONEntity Primitive() {
             return new JSONPrimitive();
         }
 
@@ -364,14 +364,14 @@ namespace Jiruffe.CSiraffe.Linq {
         /// </summary>
         /// <param name="obj">The original value.</param>
         /// <returns>A new instance of <see cref="JSONPrimitive"/> with specified original value.</returns>
-        public JSONElement Primitive(in object obj) {
+        public JSONEntity Primitive(in object obj) {
             if (obj is null) {
                 return Primitive();
             }
             if (obj is JSONPrimitive) {
-                return (JSONElement)obj;
+                return (JSONEntity)obj;
             }
-            if (obj is JSONElement) {
+            if (obj is JSONEntity) {
                 return Primitive();
             }
             if (obj.GetType().IsValueType || obj is ValueType || obj is string) {
@@ -381,23 +381,23 @@ namespace Jiruffe.CSiraffe.Linq {
         }
 
         /// <summary>
-        /// Merge another element to this element.
+        /// Merge another entity to this entity.
         /// </summary>
-        /// <param name="element">The other element.</param>
-        /// <returns>This element itself.</returns>
-        public JSONElement Merge(JSONElement element) {
-            if (element is null) {
+        /// <param name="entity">The other entity.</param>
+        /// <returns>This entity itself.</returns>
+        public JSONEntity Merge(JSONEntity entity) {
+            if (entity is null) {
                 return this;
             }
-            if (IsDictionary && element.IsDictionary) {
+            if (IsDictionary && entity.IsDictionary) {
                 var thisDictionary = AsDictionary();
-                foreach (var e in element.AsDictionary()) {
+                foreach (var e in entity.AsDictionary()) {
                     thisDictionary.Add(e);
                 }
             }
-            if (IsList && element.IsList) {
+            if (IsList && entity.IsList) {
                 var thisList = AsList();
-                foreach (var e in element.AsList()) {
+                foreach (var e in entity.AsList()) {
                     thisList.Add(e);
                 }
             }
@@ -405,31 +405,31 @@ namespace Jiruffe.CSiraffe.Linq {
         }
 
         /// <summary>
-        /// Get the <see cref="IList{T}"/> that this element represents.
+        /// Get the <see cref="IList{T}"/> that this entity represents.
         /// </summary>
-        /// <returns>The <see cref="IList{T}"/> that this element represents.</returns>
-        public virtual IList<JSONElement> AsList() {
-            return Defaults<JSONElement>.List;
+        /// <returns>The <see cref="IList{T}"/> that this entity represents.</returns>
+        public virtual IList<JSONEntity> AsList() {
+            return Defaults<JSONEntity>.List;
         }
 
         /// <summary>
-        /// Get the <see cref="IDictionary{TKey, TValue}"/> that this element represents.
+        /// Get the <see cref="IDictionary{TKey, TValue}"/> that this entity represents.
         /// </summary>
-        /// <returns>The <see cref="IDictionary{TKey, TValue}"/> that this element represents.</returns>
-        public virtual IDictionary<string, JSONElement> AsDictionary() {
-            return Defaults<string, JSONElement>.Dictionary;
+        /// <returns>The <see cref="IDictionary{TKey, TValue}"/> that this entity represents.</returns>
+        public virtual IDictionary<string, JSONEntity> AsDictionary() {
+            return Defaults<string, JSONEntity>.Dictionary;
         }
 
         /// <summary>
-        /// Get the original value that this element represents.
+        /// Get the original value that this entity represents.
         /// </summary>
-        /// <returns>The original value that this element represents.</returns>
+        /// <returns>The original value that this entity represents.</returns>
         public virtual object AsPrimitive() {
             return Defaults.Primitive;
         }
 
         /// <summary>
-        /// Converts this element to the target <see cref="Type"/> <see cref="object"/>.
+        /// Converts this entity to the target <see cref="Type"/> <see cref="object"/>.
         /// </summary>
         /// <typeparam name="T">The target <see cref="Type"/>.</typeparam>
         /// <returns>The target <see cref="Type"/> <see cref="object"/>.</returns>
@@ -479,23 +479,23 @@ namespace Jiruffe.CSiraffe.Linq {
             if (obj is null) {
                 return false;
             }
-            if (!(obj is JSONElement)) {
+            if (!(obj is JSONEntity)) {
                 return false;
             }
-            if (ElementType != ((JSONElement)obj).ElementType) {
+            if (entityType != ((JSONEntity)obj).entityType) {
                 return false;
             }
             if (IsVoid) {
                 return true;
             }
             if (IsPrimitive) {
-                return object.Equals(AsPrimitive(), ((JSONElement)obj).AsPrimitive());
+                return object.Equals(AsPrimitive(), ((JSONEntity)obj).AsPrimitive());
             }
             if (IsDictionary) {
-                return object.Equals(AsDictionary(), ((JSONElement)obj).AsDictionary());
+                return object.Equals(AsDictionary(), ((JSONEntity)obj).AsDictionary());
             }
             if (IsList) {
-                return object.Equals(AsList(), ((JSONElement)obj).AsList());
+                return object.Equals(AsList(), ((JSONEntity)obj).AsList());
             }
             return object.Equals(this.ToString(), New(obj).ToString());
         }
@@ -522,26 +522,26 @@ namespace Jiruffe.CSiraffe.Linq {
         #region Implement IDictionary
 
         /// <summary>
-        /// Adds an element with the provided key and value to the <see cref="IDictionary{TKey, TValue}"/>.
+        /// Adds an entity with the provided key and value to the <see cref="IDictionary{TKey, TValue}"/>.
         /// </summary>
-        /// <param name="key">The object to use as the key of the element to add.</param>
-        /// <param name="value">The object to use as the value of the element to add.</param>
+        /// <param name="key">The object to use as the key of the entity to add.</param>
+        /// <param name="value">The object to use as the value of the entity to add.</param>
         /// <exception cref="ArgumentNullException"><paramref name="key">key</paramref> is null.</exception>
-        /// <exception cref="ArgumentException">An element with the same key already exists in the <see cref="IDictionary{TKey, TValue}"/>.</exception>
+        /// <exception cref="ArgumentException">An entity with the same key already exists in the <see cref="IDictionary{TKey, TValue}"/>.</exception>
         /// <exception cref="NotSupportedException">The <see cref="IDictionary{TKey, TValue}"/> is read-only.</exception>
-        void IDictionary<string, JSONElement>.Add(string key, JSONElement value) {
+        void IDictionary<string, JSONEntity>.Add(string key, JSONEntity value) {
             if (IsDictionary) {
                 AsDictionary().Add(key, value);
             }
         }
 
         /// <summary>
-        /// Determines whether the <see cref="IDictionary{TKey, TValue}"/> contains an element with the specified key.
+        /// Determines whether the <see cref="IDictionary{TKey, TValue}"/> contains an entity with the specified key.
         /// </summary>
         /// <param name="key">The key to locate in the <see cref="IDictionary{TKey, TValue}"/>.</param>
-        /// <returns>true if the <see cref="IDictionary{TKey, TValue}"/> contains an element with the key; otherwise, false.</returns>
+        /// <returns>true if the <see cref="IDictionary{TKey, TValue}"/> contains an entity with the key; otherwise, false.</returns>
         /// <exception cref="ArgumentNullException"><paramref name="key">key</paramref> is null.</exception>
-        bool IDictionary<string, JSONElement>.ContainsKey(string key) {
+        bool IDictionary<string, JSONEntity>.ContainsKey(string key) {
             if (IsDictionary) {
                 return AsDictionary().ContainsKey(key);
             }
@@ -549,13 +549,13 @@ namespace Jiruffe.CSiraffe.Linq {
         }
 
         /// <summary>
-        /// Removes the element with the specified key from the <see cref="IDictionary{TKey, TValue}"/>.
+        /// Removes the entity with the specified key from the <see cref="IDictionary{TKey, TValue}"/>.
         /// </summary>
-        /// <param name="key">The key of the element to remove.</param>
-        /// <returns>true if the element is successfully removed; otherwise, false.  This method also returns false if <paramref name="key">key</paramref> was not found in the original <see cref="IDictionary{TKey, TValue}"/>.</returns>
+        /// <param name="key">The key of the entity to remove.</param>
+        /// <returns>true if the entity is successfully removed; otherwise, false.  This method also returns false if <paramref name="key">key</paramref> was not found in the original <see cref="IDictionary{TKey, TValue}"/>.</returns>
         /// <exception cref="ArgumentNullException"><paramref name="key">key</paramref> is null.</exception>
         /// <exception cref="NotSupportedException">The <see cref="IDictionary{TKey, TValue}"/> is read-only.</exception>
-        bool IDictionary<string, JSONElement>.Remove(string key) {
+        bool IDictionary<string, JSONEntity>.Remove(string key) {
             if (IsDictionary) {
                 return AsDictionary().Remove(key);
             }
@@ -567,9 +567,9 @@ namespace Jiruffe.CSiraffe.Linq {
         /// </summary>
         /// <param name="key">The key whose value to get.</param>
         /// <param name="value">When this method returns, the value associated with the specified key, if the key is found; otherwise, the default value for the type of the value parameter. This parameter is passed uninitialized.</param>
-        /// <returns>true if the object that implements <see cref="IDictionary{TKey, TValue}"/> contains an element with the specified key; otherwise, false.</returns>
+        /// <returns>true if the object that implements <see cref="IDictionary{TKey, TValue}"/> contains an entity with the specified key; otherwise, false.</returns>
         /// <exception cref="ArgumentNullException"><paramref name="key">key</paramref> is null.</exception>
-        bool IDictionary<string, JSONElement>.TryGetValue(string key, out JSONElement value) {
+        bool IDictionary<string, JSONEntity>.TryGetValue(string key, out JSONEntity value) {
             if (IsDictionary) {
                 return AsDictionary().TryGetValue(key, out value);
             }
@@ -584,7 +584,7 @@ namespace Jiruffe.CSiraffe.Linq {
         /// </summary>
         /// <param name="item">The object to add to the <see cref="ICollection{T}"/>.</param>
         /// <exception cref="NotSupportedException">The <see cref="ICollection{T}"/> is read-only.</exception>
-        void ICollection<KeyValuePair<string, JSONElement>>.Add(KeyValuePair<string, JSONElement> item) {
+        void ICollection<KeyValuePair<string, JSONEntity>>.Add(KeyValuePair<string, JSONEntity> item) {
             if (IsDictionary) {
                 AsDictionary().Add(item);
             }
@@ -594,7 +594,7 @@ namespace Jiruffe.CSiraffe.Linq {
         /// Removes all items from the <see cref="ICollection{T}"/>.
         /// </summary>
         /// <exception cref="NotSupportedException">The <see cref="ICollection{T}"/> is read-only.</exception>
-        void ICollection<KeyValuePair<string, JSONElement>>.Clear() {
+        void ICollection<KeyValuePair<string, JSONEntity>>.Clear() {
             if (IsDictionary) {
                 AsDictionary().Clear();
             }
@@ -605,7 +605,7 @@ namespace Jiruffe.CSiraffe.Linq {
         /// </summary>
         /// <param name="item">The object to locate in the <see cref="ICollection{T}"/>.</param>
         /// <returns>true if <paramref name="item">item</paramref> is found in the <see cref="ICollection{T}"/>; otherwise, false.</returns>
-        bool ICollection<KeyValuePair<string, JSONElement>>.Contains(KeyValuePair<string, JSONElement> item) {
+        bool ICollection<KeyValuePair<string, JSONEntity>>.Contains(KeyValuePair<string, JSONEntity> item) {
             if (IsDictionary) {
                 return AsDictionary().Contains(item);
             }
@@ -613,14 +613,14 @@ namespace Jiruffe.CSiraffe.Linq {
         }
 
         /// <summary>
-        /// Copies the elements of the <see cref="ICollection{T}"/> to an <see cref="Array"/>, starting at a particular <see cref="Array"/> index.
+        /// Copies the entities of the <see cref="ICollection{T}"/> to an <see cref="Array"/>, starting at a particular <see cref="Array"/> index.
         /// </summary>
-        /// <param name="array">The one-dimensional <see cref="Array"/> that is the destination of the elements copied from <see cref="ICollection{T}"/>. The <see cref="Array"/> must have zero-based indexing.</param>
+        /// <param name="array">The one-dimensional <see cref="Array"/> that is the destination of the entities copied from <see cref="ICollection{T}"/>. The <see cref="Array"/> must have zero-based indexing.</param>
         /// <param name="arrayIndex">The zero-based index in array at which copying begins.</param>
         /// <exception cref="ArgumentNullException"><paramref name="array">array</paramref> is null.</exception>
         /// <exception cref="ArgumentOutOfRangeException"><paramref name="arrayIndex">arrayIndex</paramref> is less than 0.</exception>
-        /// <exception cref="ArgumentException">The number of elements in the source <see cref="ICollection{T}"/> is greater than the available space from <paramref name="arrayIndex">arrayIndex</paramref> to the end of the destination <paramref name="array">array</paramref>.</exception>
-        void ICollection<KeyValuePair<string, JSONElement>>.CopyTo(KeyValuePair<string, JSONElement>[] array, int arrayIndex) {
+        /// <exception cref="ArgumentException">The number of entities in the source <see cref="ICollection{T}"/> is greater than the available space from <paramref name="arrayIndex">arrayIndex</paramref> to the end of the destination <paramref name="array">array</paramref>.</exception>
+        void ICollection<KeyValuePair<string, JSONEntity>>.CopyTo(KeyValuePair<string, JSONEntity>[] array, int arrayIndex) {
             if (IsDictionary) {
                 AsDictionary().CopyTo(array, arrayIndex);
             }
@@ -632,7 +632,7 @@ namespace Jiruffe.CSiraffe.Linq {
         /// <param name="item">The object to remove from the <see cref="ICollection{T}"/>.</param>
         /// <returns>true if <paramref name="item">item</paramref> was successfully removed from the <see cref="ICollection{T}"/>; otherwise, false. This method also returns false if <paramref name="item">item</paramref> is not found in the original <see cref="ICollection{T}"/>.</returns>
         /// <exception cref="NotSupportedException">The <see cref="ICollection{T}"/> is read-only.</exception>
-        bool ICollection<KeyValuePair<string, JSONElement>>.Remove(KeyValuePair<string, JSONElement> item) {
+        bool ICollection<KeyValuePair<string, JSONEntity>>.Remove(KeyValuePair<string, JSONEntity> item) {
             if (IsDictionary) {
                 return AsDictionary().Remove(item);
             }
@@ -645,7 +645,7 @@ namespace Jiruffe.CSiraffe.Linq {
         /// Returns an enumerator that iterates through the collection.
         /// </summary>
         /// <returns>An enumerator that can be used to iterate through the collection.</returns>
-        IEnumerator<KeyValuePair<string, JSONElement>> IEnumerable<KeyValuePair<string, JSONElement>>.GetEnumerator() {
+        IEnumerator<KeyValuePair<string, JSONEntity>> IEnumerable<KeyValuePair<string, JSONEntity>>.GetEnumerator() {
             if (IsDictionary) {
                 return AsDictionary().GetEnumerator();
             }
@@ -665,7 +665,7 @@ namespace Jiruffe.CSiraffe.Linq {
         /// </summary>
         /// <param name="item">The object to locate in the <see cref="IList{T}"/>.</param>
         /// <returns>The index of <paramref name="item">item</paramref> if found in the list; otherwise, -1.</returns>
-        int IList<JSONElement>.IndexOf(JSONElement item) {
+        int IList<JSONEntity>.IndexOf(JSONEntity item) {
             if (IsList) {
                 return AsList().IndexOf(item);
             }
@@ -679,7 +679,7 @@ namespace Jiruffe.CSiraffe.Linq {
         /// <param name="item">The object to insert into the <see cref="IList{T}"/>.</param>
         /// <exception cref="ArgumentOutOfRangeException"><paramref name="index">index</paramref> is not a valid index in the <see cref="IList{T}"/>.</exception>
         /// <exception cref="NotSupportedException">The <see cref="IList{T}"/> is read-only.</exception>
-        void IList<JSONElement>.Insert(int index, JSONElement item) {
+        void IList<JSONEntity>.Insert(int index, JSONEntity item) {
             if (IsList) {
                 AsList().Insert(index, item);
             }
@@ -691,7 +691,7 @@ namespace Jiruffe.CSiraffe.Linq {
         /// <param name="index">The zero-based index of the item to remove.</param>
         /// <exception cref="ArgumentOutOfRangeException"><paramref name="index">index</paramref> is not a valid index in the <see cref="IList{T}"/>.</exception>
         /// <exception cref="NotSupportedException">The <see cref="IList{T}"/> is read-only.</exception>
-        void IList<JSONElement>.RemoveAt(int index) {
+        void IList<JSONEntity>.RemoveAt(int index) {
             if (IsList) {
                 AsList().RemoveAt(index);
             }
@@ -704,7 +704,7 @@ namespace Jiruffe.CSiraffe.Linq {
         /// </summary>
         /// <param name="item">The object to add to the <see cref="ICollection{T}"/>.</param>
         /// <exception cref="NotSupportedException">The <see cref="ICollection{T}"/> is read-only.</exception>
-        void ICollection<JSONElement>.Add(JSONElement item) {
+        void ICollection<JSONEntity>.Add(JSONEntity item) {
             if (IsList) {
                 AsList().Add(item);
             }
@@ -714,7 +714,7 @@ namespace Jiruffe.CSiraffe.Linq {
         /// Removes all items from the <see cref="ICollection{T}"/>.
         /// </summary>
         /// <exception cref="NotSupportedException">The <see cref="ICollection{T}"/> is read-only.</exception>
-        void ICollection<JSONElement>.Clear() {
+        void ICollection<JSONEntity>.Clear() {
             if (IsList) {
                 AsList().Clear();
             }
@@ -725,7 +725,7 @@ namespace Jiruffe.CSiraffe.Linq {
         /// </summary>
         /// <param name="item">The object to locate in the <see cref="ICollection{T}"/>.</param>
         /// <returns>true if <paramref name="item">item</paramref> is found in the <see cref="ICollection{T}"/>; otherwise, false.</returns>
-        bool ICollection<JSONElement>.Contains(JSONElement item) {
+        bool ICollection<JSONEntity>.Contains(JSONEntity item) {
             if (IsList) {
                 return AsList().Contains(item);
             }
@@ -733,14 +733,14 @@ namespace Jiruffe.CSiraffe.Linq {
         }
 
         /// <summary>
-        /// Copies the elements of the <see cref="ICollection{T}"/> to an <see cref="Array"/>, starting at a particular <see cref="Array"/> index.
+        /// Copies the entities of the <see cref="ICollection{T}"/> to an <see cref="Array"/>, starting at a particular <see cref="Array"/> index.
         /// </summary>
-        /// <param name="array">The one-dimensional <see cref="Array"/> that is the destination of the elements copied from <see cref="ICollection{T}"/>. The <see cref="Array"/> must have zero-based indexing.</param>
+        /// <param name="array">The one-dimensional <see cref="Array"/> that is the destination of the entities copied from <see cref="ICollection{T}"/>. The <see cref="Array"/> must have zero-based indexing.</param>
         /// <param name="arrayIndex">The zero-based index in array at which copying begins.</param>
         /// <exception cref="ArgumentNullException"><paramref name="array">array</paramref> is null.</exception>
         /// <exception cref="ArgumentOutOfRangeException"><paramref name="arrayIndex">arrayIndex</paramref> is less than 0.</exception>
-        /// <exception cref="ArgumentException">The number of elements in the source <see cref="ICollection{T}"/> is greater than the available space from <paramref name="arrayIndex">arrayIndex</paramref> to the end of the destination <paramref name="array">array</paramref>.</exception>
-        void ICollection<JSONElement>.CopyTo(JSONElement[] array, int arrayIndex) {
+        /// <exception cref="ArgumentException">The number of entities in the source <see cref="ICollection{T}"/> is greater than the available space from <paramref name="arrayIndex">arrayIndex</paramref> to the end of the destination <paramref name="array">array</paramref>.</exception>
+        void ICollection<JSONEntity>.CopyTo(JSONEntity[] array, int arrayIndex) {
             if (IsList) {
                 AsList().CopyTo(array, arrayIndex);
             }
@@ -752,7 +752,7 @@ namespace Jiruffe.CSiraffe.Linq {
         /// <param name="item">The object to remove from the <see cref="ICollection{T}"/>.</param>
         /// <returns>true if <paramref name="item">item</paramref> was successfully removed from the <see cref="ICollection{T}"/>; otherwise, false. This method also returns false if <paramref name="item">item</paramref> is not found in the original <see cref="ICollection{T}"/>.</returns>
         /// <exception cref="NotSupportedException">The <see cref="ICollection{T}"/> is read-only.</exception>
-        bool ICollection<JSONElement>.Remove(JSONElement item) {
+        bool ICollection<JSONEntity>.Remove(JSONEntity item) {
             if (IsList) {
                 return AsList().Remove(item);
             }
@@ -765,7 +765,7 @@ namespace Jiruffe.CSiraffe.Linq {
         /// Returns an enumerator that iterates through the collection.
         /// </summary>
         /// <returns>An enumerator that can be used to iterate through the collection.</returns>
-        IEnumerator<JSONElement> IEnumerable<JSONElement>.GetEnumerator() {
+        IEnumerator<JSONEntity> IEnumerable<JSONEntity>.GetEnumerator() {
             if (IsList) {
                 return AsList().GetEnumerator();
             }
@@ -943,12 +943,12 @@ namespace Jiruffe.CSiraffe.Linq {
     }
 
     /// <summary>
-    /// Represents JSON elements types.
+    /// Represents JSON entity types.
     /// </summary>
-    public enum JSONElementType {
+    public enum JSONEntityType {
 
         /// <summary>
-        /// Unknown element type.
+        /// Unknown entity type.
         /// </summary>
         Unknown,
 
