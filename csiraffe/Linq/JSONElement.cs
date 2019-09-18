@@ -287,7 +287,8 @@ namespace Jiruffe.CSiraffe.Linq {
         #region Methods
 
         /// <summary>
-        /// Alias of <see cref="Void"/>.
+        /// Alias of <see cref="Void"/>. Won't create a new instance actually.
+        /// <para>Use <see cref="New(in object)"/> instead.</para>
         /// </summary>
         /// <returns>What <see cref="Void"/> returns.</returns>
         [Obsolete("Deprecated. Use JSONElement.New(object) instead.")]
