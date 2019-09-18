@@ -96,6 +96,7 @@ namespace Jiruffe.CSiraffe.Linq {
         /// Returns <see cref="JSONVoid.Instance"/> which represents a <c>void</c> element,
         /// also known as <c>null</c>, <c>undefined</c> or <c>NaN</c> in JSON.
         /// </summary>
+        /// <returns><see cref="JSONVoid.Instance"/></returns>
         public static JSONElement Void {
             get {
                 return JSONVoid.Instance;
@@ -105,6 +106,7 @@ namespace Jiruffe.CSiraffe.Linq {
         /// <summary>
         /// Indicate whether this element is empty.
         /// </summary>
+        /// <returns>true if this element is empty; otherwise, false.</returns>
         public bool IsEmpty {
             get {
                 if (IsDictionary) {
@@ -124,8 +126,9 @@ namespace Jiruffe.CSiraffe.Linq {
         }
 
         /// <summary>
-        /// Indicate whether this element is <c>void</c>.
+        /// Indicate whether this element is void.
         /// </summary>
+        /// <returns>true if this element is void; otherwise, false.</returns>
         public bool IsVoid {
             get {
                 return this is JSONVoid;
@@ -135,6 +138,7 @@ namespace Jiruffe.CSiraffe.Linq {
         /// <summary>
         /// Indicate whether this element is an instance of <see cref="JSONDictionary"/>.
         /// </summary>
+        /// <returns>true if this element is an instance of <see cref="JSONDictionary"/>; otherwise, false.</returns>
         public bool IsDictionary {
             get {
                 return this is JSONDictionary;
@@ -144,6 +148,7 @@ namespace Jiruffe.CSiraffe.Linq {
         /// <summary>
         /// Indicate whether this element is an instance of <see cref="JSONList"/>.
         /// </summary>
+        /// <returns>true if this element is an instance of <see cref="JSONList"/>; otherwise, false.</returns>
         public bool IsList {
             get {
                 return this is JSONList;
@@ -153,6 +158,7 @@ namespace Jiruffe.CSiraffe.Linq {
         /// <summary>
         /// Indicate whether this element is an instance of <see cref="JSONPrimitive"/>.
         /// </summary>
+        /// <returns>true if this element is an instance of <see cref="JSONPrimitive"/>; otherwise, false.</returns>
         public bool IsPrimitive {
             get {
                 return this is JSONPrimitive;
@@ -162,6 +168,7 @@ namespace Jiruffe.CSiraffe.Linq {
         /// <summary>
         /// Get the <see cref="JSONElementType"/> of this element.
         /// </summary>
+        /// <returns>The <see cref="JSONElementType"/> of this element</returns>
         public JSONElementType ElementType {
             get {
                 if (IsVoid) {
