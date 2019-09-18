@@ -52,6 +52,10 @@ namespace Jiruffe.CSiraffe.Linq {
         #endregion
 
         #region Methods
+
+        public override IList<JSONElement> AsList() {
+        }
+
         #endregion
 
     }

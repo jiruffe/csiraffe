@@ -29,7 +29,7 @@ namespace Jiruffe.CSiraffe.Linq {
     /// <summary>
     /// Represents JSON element including JSON map {}, list [], or primitive value such as integer, string...
     /// </summary>
-    public abstract class JSONElement : IDictionary<object, JSONElement> {
+    public abstract class JSONElement : IConvertible, IDictionary<object, JSONElement> {
 
         #region Fields
         #endregion
@@ -131,7 +131,7 @@ namespace Jiruffe.CSiraffe.Linq {
         /// <summary>
         /// Get the <see cref="JSONElementType"/> of this element.
         /// </summary>
-        public JSONElementType Type {
+        public JSONElementType ElementType {
             get {
                 if (IsVoid) {
                     return JSONElementType.Void;
@@ -159,15 +159,18 @@ namespace Jiruffe.CSiraffe.Linq {
                 }
                 if (IsList) {
                     var lst = AsList();
-                    var l_rst = Defaults<KeyValuePair<object, JSONElement>>.Collection;
+                    var rst = Defaults<KeyValuePair<object, JSONElement>>.Collection;
                     for (var i = 0; i < lst.Count; i++) {
-                        l_rst.Add(new KeyValuePair<object, JSONElement>(i, lst[i]));
+                        rst.Add(new KeyValuePair<object, JSONElement>(i, lst[i]));
                     }
-                    return l_rst;
+                    return rst;
                 }
-                var rst = Defaults<KeyValuePair<object, JSONElement>>.Collection;
-                rst.Add(new KeyValuePair<object, JSONElement>(default, this));
-                return rst;
+                if (IsPrimitive) {
+                    var rst = Defaults<KeyValuePair<object, JSONElement>>.Collection;
+                    rst.Add(new KeyValuePair<object, JSONElement>(AsPrimitive(), this));
+                    return rst;
+                }
+                return Defaults<KeyValuePair<object, JSONElement>>.Collection;
             }
         }
 
@@ -186,6 +189,11 @@ namespace Jiruffe.CSiraffe.Linq {
                     for (var i = 0; i < AsList().Count; i++) {
                         rst.Add(i);
                     }
+                    return rst;
+                }
+                if (IsPrimitive) {
+                    var rst = Defaults<object>.Collection;
+                    rst.Add(AsPrimitive());
                     return rst;
                 }
                 return Defaults<object>.Collection;
@@ -242,7 +250,7 @@ namespace Jiruffe.CSiraffe.Linq {
         /// Alias of <see cref="Void"/>.
         /// </summary>
         /// <returns>What <see cref="Void"/> returns.</returns>
-        [Obsolete("Deprecated. Use JSONElement.New(object) Instead.")]
+        [Obsolete("Deprecated. Use JSONElement.New(object) instead.")]
         public JSONElement New() {
             return Void;
         }
@@ -337,23 +345,23 @@ namespace Jiruffe.CSiraffe.Linq {
         /// </summary>
         /// <param name="element">The other element.</param>
         /// <returns>This element itself.</returns>
-        public JSONElement Merge(JSONElement element) {
-            throw new UnsupportedOperationException("Only merging JSONList into JSONList or merging JSONMap into JSONMap are supported");
+        public virtual JSONElement Merge(JSONElement element) {
+            throw new UnsupportedOperationException("Only merging JSONList into JSONList or JSONMap into JSONMap are supported.");
         }
 
         /// <summary>
         /// Get the <see cref="IList{T}"/> that this element represents.
         /// </summary>
         /// <returns>The <see cref="IList{T}"/> that this element represents.</returns>
-        public IList<JSONElement> AsList() {
-            throw new UnexpectedTypeException("Could not cast List from " + GetType().Name);
+        public virtual IList<JSONElement> AsList() {
+            throw new UnexpectedTypeException("Could not cast List from " + GetType().Name + ".");
         }
 
         /// <summary>
         /// Get the <see cref="IDictionary{TKey, TValue}"/> that this element represents.
         /// </summary>
         /// <returns>The <see cref="IDictionary{TKey, TValue}"/> that this element represents.</returns>
-        public IDictionary<object, JSONElement> AsMap() {
+        public virtual IDictionary<object, JSONElement> AsMap() {
             return this;
         }
 
@@ -361,130 +369,27 @@ namespace Jiruffe.CSiraffe.Linq {
         /// Get the original value that this element represents.
         /// </summary>
         /// <returns>The original value that this element represents.</returns>
-        public object AsPrimitive() {
+        public virtual object AsPrimitive() {
             return this;
         }
 
         /// <summary>
-        /// Returns the <see cref="string"/> that this element represents if instance of <see cref="JSONPrimitive"/>,
-        /// or the JSON expression of this element otherwise.
+        /// Converts this element to the target <see cref="Type"/> <see cref="object"/>.
         /// </summary>
-        /// <returns>The <see cref="string"/> that this element represents or the JSON expression of this element.</returns>
-        public string AsString() {
-            return StringAnalyzer.Analyze(this);
-        }
-
-        /// <summary>
-        /// Get the <see cref="bool"/> value that this element represents.
-        /// </summary>
-        /// <returns>The <see cref="bool"/> value that this element represents.</returns>
-        public bool AsBoolean() {
-            throw new UnexpectedTypeException("Could not cast Boolean from " + GetType().Name);
-        }
-
-        /// <summary>
-        /// Get the <see cref="byte"/> value that this element represents.
-        /// </summary>
-        /// <returns>The <see cref="byte"/> value that this element represents.</returns>
-        public byte AsByte() {
-            throw new UnexpectedTypeException("Could not cast Byte from " + GetType().Name);
-        }
-
-        /// <summary>
-        /// Get the <see cref="sbyte"/> value that this element represents.
-        /// </summary>
-        /// <returns>The <see cref="sbyte"/> value that this element represents.</returns>
-        public sbyte AsSByte() {
-            throw new UnexpectedTypeException("Could not cast SByte from " + GetType().Name);
-        }
-
-        /// <summary>
-        /// Get the <see cref="char"/> value that this element represents.
-        /// </summary>
-        /// <returns>The <see cref="char"/> value that this element represents.</returns>
-        public char AsChar() {
-            throw new UnexpectedTypeException("Could not cast Char from " + GetType().Name);
-        }
-
-        /// <summary>
-        /// Get the <see cref="decimal"/> value that this element represents.
-        /// </summary>
-        /// <returns>The <see cref="decimal"/> value that this element represents.</returns>
-        public decimal AsDecimal() {
-            throw new UnexpectedTypeException("Could not cast Decimal from " + GetType().Name);
-        }
-
-        /// <summary>
-        /// Get the <see cref="double"/> value that this element represents.
-        /// </summary>
-        /// <returns>The <see cref="double"/> value that this element represents.</returns>
-        public double AsDouble() {
-            throw new UnexpectedTypeException("Could not cast Double from " + GetType().Name);
-        }
-
-        /// <summary>
-        /// Get the <see cref="float"/> value that this element represents.
-        /// </summary>
-        /// <returns>The <see cref="float"/> value that this element represents.</returns>
-        public float AsFloat() {
-            throw new UnexpectedTypeException("Could not cast Float from " + GetType().Name);
-        }
-
-        /// <summary>
-        /// Get the <see cref="int"/> value that this element represents.
-        /// </summary>
-        /// <returns>The <see cref="int"/> value that this element represents.</returns>
-        public int AsInt32() {
-            throw new UnexpectedTypeException("Could not cast Int32 from " + GetType().Name);
-        }
-
-        /// <summary>
-        /// Get the <see cref="uint"/> value that this element represents.
-        /// </summary>
-        /// <returns>The <see cref="uint"/> value that this element represents.</returns>
-        public uint AsUInt32() {
-            throw new UnexpectedTypeException("Could not cast UInt32 from " + GetType().Name);
-        }
-
-        /// <summary>
-        /// Get the <see cref="long"/> value that this element represents.
-        /// </summary>
-        /// <returns>The <see cref="long"/> value that this element represents.</returns>
-        public long AsInt64() {
-            throw new UnexpectedTypeException("Could not cast Int64 from " + GetType().Name);
-        }
-
-        /// <summary>
-        /// Get the <see cref="ulong"/> value that this element represents.
-        /// </summary>
-        /// <returns>The <see cref="ulong"/> value that this element represents.</returns>
-        public ulong AsUInt64() {
-            throw new UnexpectedTypeException("Could not cast UInt64 from " + GetType().Name);
-        }
-
-        /// <summary>
-        /// Get the <see cref="short"/> value that this element represents.
-        /// </summary>
-        /// <returns>The <see cref="short"/> value that this element represents.</returns>
-        public short AsInt16() {
-            throw new UnexpectedTypeException("Could not cast Int16 from " + GetType().Name);
-        }
-
-        /// <summary>
-        /// Get the <see cref="ushort"/> value that this element represents.
-        /// </summary>
-        /// <returns>The <see cref="ushort"/> value that this element represents.</returns>
-        public ushort AsUInt16() {
-            throw new UnexpectedTypeException("Could not cast UInt16 from " + GetType().Name);
-        }
-
-        /// <summary>
-        /// Converts this element to the target <see cref="System.Type"/> <see cref="object"/>.
-        /// </summary>
-        /// <typeparam name="T">The target <see cref="System.Type"/>.</typeparam>
-        /// <returns>The target <see cref="System.Type"/> <see cref="object"/>.</returns>
+        /// <typeparam name="T">The target <see cref="Type"/>.</typeparam>
+        /// <returns>The target <see cref="Type"/> <see cref="object"/>.</returns>
         public T As<T>() {
             return ObjectAnalyzer.Analyze<T>(this);
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="provider"></param>
+        /// <returns></returns>
+        public T As<T>(IFormatProvider provider) {
+            return ObjectAnalyzer.Analyze<T>(this, provider);
         }
 
         #region Override Object
@@ -494,7 +399,7 @@ namespace Jiruffe.CSiraffe.Linq {
         /// </summary>
         /// <returns>JSON <see cref="string"/>.</returns>
         public override string ToString() {
-            return AsString();
+            return As<string>();
         }
 
         /// <summary>
@@ -532,7 +437,7 @@ namespace Jiruffe.CSiraffe.Linq {
             if (!(obj is JSONElement)) {
                 return false;
             }
-            if (Type != ((JSONElement)obj).Type) {
+            if (ElementType != ((JSONElement)obj).ElementType) {
                 return false;
             }
             if (IsVoid) {
@@ -567,7 +472,7 @@ namespace Jiruffe.CSiraffe.Linq {
         #region Implement IDictionary
 
         void IDictionary<object, JSONElement>.Add(object key, JSONElement value) {
-            throw new UnsupportedOperationException("Could not Add to " + GetType().Name);
+            throw new UnsupportedOperationException("Could not Add to " + GetType().Name + ".");
         }
 
         bool IDictionary<object, JSONElement>.ContainsKey(object key) {
@@ -575,7 +480,7 @@ namespace Jiruffe.CSiraffe.Linq {
         }
 
         bool IDictionary<object, JSONElement>.Remove(object key) {
-            throw new UnsupportedOperationException("Could not Remove from " + GetType().Name);
+            throw new UnsupportedOperationException("Could not Remove from " + GetType().Name + ".");
         }
 
         bool IDictionary<object, JSONElement>.TryGetValue(object key, out JSONElement value) {
@@ -588,11 +493,11 @@ namespace Jiruffe.CSiraffe.Linq {
         #region Implement ICollection
 
         void ICollection<KeyValuePair<object, JSONElement>>.Add(KeyValuePair<object, JSONElement> item) {
-            Entries.Add(item);
+            throw new UnsupportedOperationException("Could not Add to " + GetType().Name + ".");
         }
 
         void ICollection<KeyValuePair<object, JSONElement>>.Clear() {
-            Entries.Clear();
+            throw new UnsupportedOperationException("Could not Clear from " + GetType().Name + ".");
         }
 
         bool ICollection<KeyValuePair<object, JSONElement>>.Contains(KeyValuePair<object, JSONElement> item) {
@@ -604,7 +509,82 @@ namespace Jiruffe.CSiraffe.Linq {
         }
 
         bool ICollection<KeyValuePair<object, JSONElement>>.Remove(KeyValuePair<object, JSONElement> item) {
-            return Entries.Remove(item);
+            throw new UnsupportedOperationException("Could not Remove from " + GetType().Name + ".");
+        }
+
+        #endregion
+
+        #region Implement IConvertible
+
+        TypeCode IConvertible.GetTypeCode() {
+            if (IsPrimitive) {
+                return Type.GetTypeCode(AsPrimitive().GetType());
+            }
+            return TypeCode.Object;
+        }
+
+        object IConvertible.ToType(Type conversionType, IFormatProvider provider) {
+            return GetType().GetMethod("As").MakeGenericMethod(new Type[] { conversionType }).Invoke(this, new object[] { provider });
+        }
+
+        bool IConvertible.ToBoolean(IFormatProvider provider) {
+            return As<bool>(provider);
+        }
+
+        byte IConvertible.ToByte(IFormatProvider provider) {
+            return As<byte>(provider);
+        }
+
+        char IConvertible.ToChar(IFormatProvider provider) {
+            return As<char>(provider);
+        }
+
+        decimal IConvertible.ToDecimal(IFormatProvider provider) {
+            return As<decimal>(provider);
+        }
+
+        double IConvertible.ToDouble(IFormatProvider provider) {
+            return As<double>(provider);
+        }
+
+        short IConvertible.ToInt16(IFormatProvider provider) {
+            return As<short>(provider);
+        }
+
+        int IConvertible.ToInt32(IFormatProvider provider) {
+            return As<int>(provider);
+        }
+
+        long IConvertible.ToInt64(IFormatProvider provider) {
+            return As<long>(provider);
+        }
+
+        sbyte IConvertible.ToSByte(IFormatProvider provider) {
+            return As<sbyte>(provider);
+        }
+
+        float IConvertible.ToSingle(IFormatProvider provider) {
+            return As<float>(provider);
+        }
+
+        string IConvertible.ToString(IFormatProvider provider) {
+            return As<string>(provider);
+        }
+
+        ushort IConvertible.ToUInt16(IFormatProvider provider) {
+            return As<ushort>(provider);
+        }
+
+        uint IConvertible.ToUInt32(IFormatProvider provider) {
+            return As<uint>(provider);
+        }
+
+        ulong IConvertible.ToUInt64(IFormatProvider provider) {
+            return As<ulong>(provider);
+        }
+
+        DateTime IConvertible.ToDateTime(IFormatProvider provider) {
+            return As<DateTime>(provider);
         }
 
         #endregion

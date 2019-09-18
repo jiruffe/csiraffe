@@ -28,7 +28,7 @@ namespace Jiruffe.CSiraffe.Analyzer {
             return default;
         }
 
-        internal static T Analyze<T>(JSONElement element) {
+        internal static T Analyze<T>(JSONElement element, IFormatProvider provider = default) {
             return default;
         }
 
