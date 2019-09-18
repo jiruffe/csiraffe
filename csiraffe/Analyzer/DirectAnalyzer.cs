@@ -20,12 +20,26 @@ using System;
 
 namespace Jiruffe.CSiraffe.Analyzer {
 
+    /// <summary>
+    /// JSON <see cref="string"/> &lt;=&gt; <see cref="object"/> conversion.
+    /// </summary>
     internal static class DirectAnalyzer {
 
+        /// <summary>
+        /// <see cref="object"/> =&gt; JSON <see cref="string"/> conversion.
+        /// </summary>
+        /// <param name="obj">The <see cref="object"/> to be converted.</param>
+        /// <returns>The JSON <see cref="string"/> converted.</returns>
         internal static string Analyze(object obj) {
             return default;
         }
 
+        /// <summary>
+        /// JSON <see cref="string"/> =&gt; <see cref="object"/> conversion.
+        /// </summary>
+        /// <typeparam name="T">The target <see cref="Type"/>.</typeparam>
+        /// <param name="str">The JSON <see cref="string"/> to be converted.</param>
+        /// <returns>The target <see cref="Type"/> <see cref="object"/> converted.</returns>
         internal static T Analyze<T>(string str) {
             return default;
         }

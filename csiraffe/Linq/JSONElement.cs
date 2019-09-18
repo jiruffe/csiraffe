@@ -436,16 +436,6 @@ namespace Jiruffe.CSiraffe.Linq {
             return ObjectAnalyzer.Analyze<T>(this);
         }
 
-        /// <summary>
-        /// 
-        /// </summary>
-        /// <typeparam name="T"></typeparam>
-        /// <param name="provider"></param>
-        /// <returns></returns>
-        public T As<T>(IFormatProvider provider) {
-            return ObjectAnalyzer.Analyze<T>(this, provider);
-        }
-
         #region Override Object
 
         /// <summary>
@@ -807,7 +797,7 @@ namespace Jiruffe.CSiraffe.Linq {
         /// <param name="provider">An <see cref="IFormatProvider"/> interface implementation that supplies culture-specific formatting information.</param>
         /// <returns>An <see cref="object"/> instance of type <paramref name="conversionType">conversionType</paramref> whose value is equivalent to the value of this instance.</returns>
         object IConvertible.ToType(Type conversionType, IFormatProvider provider) {
-            return GetType().GetMethod("As").MakeGenericMethod(new Type[] { conversionType }).Invoke(this, new object[] { provider });
+            return Convert.ChangeType(GetType().GetMethod("As").MakeGenericMethod(new Type[] { conversionType }).Invoke(this, null), conversionType, provider);
         }
 
         /// <summary>
@@ -816,7 +806,7 @@ namespace Jiruffe.CSiraffe.Linq {
         /// <param name="provider">An <see cref="IFormatProvider"/> interface implementation that supplies culture-specific formatting information.</param>
         /// <returns>A <see cref="string"/> instance equivalent to the value of this instance.</returns>
         string IConvertible.ToString(IFormatProvider provider) {
-            return As<string>(provider);
+            return Convert.ToString(As<string>(), provider);
         }
 
         /// <summary>
@@ -825,7 +815,7 @@ namespace Jiruffe.CSiraffe.Linq {
         /// <param name="provider">An <see cref="IFormatProvider"/> interface implementation that supplies culture-specific formatting information.</param>
         /// <returns>A Boolean value equivalent to the value of this instance.</returns>
         bool IConvertible.ToBoolean(IFormatProvider provider) {
-            return As<bool>(provider);
+            return Convert.ToBoolean(As<bool>(), provider);
         }
 
         /// <summary>
@@ -834,7 +824,7 @@ namespace Jiruffe.CSiraffe.Linq {
         /// <param name="provider">An <see cref="IFormatProvider"/> interface implementation that supplies culture-specific formatting information.</param>
         /// <returns>An 8-bit unsigned integer equivalent to the value of this instance.</returns>
         byte IConvertible.ToByte(IFormatProvider provider) {
-            return As<byte>(provider);
+            return Convert.ToByte(As<byte>(), provider);
         }
 
         /// <summary>
@@ -843,7 +833,7 @@ namespace Jiruffe.CSiraffe.Linq {
         /// <param name="provider">An <see cref="IFormatProvider"/> interface implementation that supplies culture-specific formatting information.</param>
         /// <returns>A Unicode character equivalent to the value of this instance.</returns>
         char IConvertible.ToChar(IFormatProvider provider) {
-            return As<char>(provider);
+            return Convert.ToChar(As<char>(), provider);
         }
 
         /// <summary>
@@ -852,7 +842,7 @@ namespace Jiruffe.CSiraffe.Linq {
         /// <param name="provider">An <see cref="IFormatProvider"/> interface implementation that supplies culture-specific formatting information.</param>
         /// <returns>A <see cref="decimal"/> number equivalent to the value of this instance.</returns>
         decimal IConvertible.ToDecimal(IFormatProvider provider) {
-            return As<decimal>(provider);
+            return Convert.ToDecimal(As<decimal>(), provider);
         }
 
         /// <summary>
@@ -861,7 +851,7 @@ namespace Jiruffe.CSiraffe.Linq {
         /// <param name="provider">An <see cref="IFormatProvider"/> interface implementation that supplies culture-specific formatting information.</param>
         /// <returns>A double-precision floating-point number equivalent to the value of this instance.</returns>
         double IConvertible.ToDouble(IFormatProvider provider) {
-            return As<double>(provider);
+            return Convert.ToDouble(As<double>(), provider);
         }
 
         /// <summary>
@@ -870,7 +860,7 @@ namespace Jiruffe.CSiraffe.Linq {
         /// <param name="provider">An <see cref="IFormatProvider"/> interface implementation that supplies culture-specific formatting information.</param>
         /// <returns>An 16-bit signed integer equivalent to the value of this instance.</returns>
         short IConvertible.ToInt16(IFormatProvider provider) {
-            return As<short>(provider);
+            return Convert.ToInt16(As<short>(), provider);
         }
 
         /// <summary>
@@ -879,7 +869,7 @@ namespace Jiruffe.CSiraffe.Linq {
         /// <param name="provider">An <see cref="IFormatProvider"/> interface implementation that supplies culture-specific formatting information.</param>
         /// <returns>An 32-bit signed integer equivalent to the value of this instance.</returns>
         int IConvertible.ToInt32(IFormatProvider provider) {
-            return As<int>(provider);
+            return Convert.ToInt32(As<int>(), provider);
         }
 
         /// <summary>
@@ -888,7 +878,7 @@ namespace Jiruffe.CSiraffe.Linq {
         /// <param name="provider">An <see cref="IFormatProvider"/> interface implementation that supplies culture-specific formatting information.</param>
         /// <returns>An 64-bit signed integer equivalent to the value of this instance.</returns>
         long IConvertible.ToInt64(IFormatProvider provider) {
-            return As<long>(provider);
+            return Convert.ToInt64(As<long>(), provider);
         }
 
         /// <summary>
@@ -897,7 +887,7 @@ namespace Jiruffe.CSiraffe.Linq {
         /// <param name="provider">An <see cref="IFormatProvider"/> interface implementation that supplies culture-specific formatting information.</param>
         /// <returns>An 8-bit signed integer equivalent to the value of this instance.</returns>
         sbyte IConvertible.ToSByte(IFormatProvider provider) {
-            return As<sbyte>(provider);
+            return Convert.ToSByte(As<sbyte>(), provider);
         }
 
         /// <summary>
@@ -906,7 +896,7 @@ namespace Jiruffe.CSiraffe.Linq {
         /// <param name="provider">An <see cref="IFormatProvider"/> interface implementation that supplies culture-specific formatting information.</param>
         /// <returns>A single-precision floating-point number equivalent to the value of this instance.</returns>
         float IConvertible.ToSingle(IFormatProvider provider) {
-            return As<float>(provider);
+            return Convert.ToSingle(As<float>(), provider);
         }
 
         /// <summary>
@@ -915,7 +905,7 @@ namespace Jiruffe.CSiraffe.Linq {
         /// <param name="provider">An <see cref="IFormatProvider"/> interface implementation that supplies culture-specific formatting information.</param>
         /// <returns>An 16-bit unsigned integer equivalent to the value of this instance.</returns>
         ushort IConvertible.ToUInt16(IFormatProvider provider) {
-            return As<ushort>(provider);
+            return Convert.ToUInt16(As<ushort>(), provider);
         }
 
         /// <summary>
@@ -924,7 +914,7 @@ namespace Jiruffe.CSiraffe.Linq {
         /// <param name="provider">An <see cref="IFormatProvider"/> interface implementation that supplies culture-specific formatting information.</param>
         /// <returns>An 32-bit unsigned integer equivalent to the value of this instance.</returns>
         uint IConvertible.ToUInt32(IFormatProvider provider) {
-            return As<uint>(provider);
+            return Convert.ToUInt32(As<uint>(), provider);
         }
 
         /// <summary>
@@ -933,7 +923,7 @@ namespace Jiruffe.CSiraffe.Linq {
         /// <param name="provider">An <see cref="IFormatProvider"/> interface implementation that supplies culture-specific formatting information.</param>
         /// <returns>An 64-bit unsigned integer equivalent to the value of this instance.</returns>
         ulong IConvertible.ToUInt64(IFormatProvider provider) {
-            return As<ulong>(provider);
+            return Convert.ToUInt64(As<ulong>(), provider);
         }
 
         /// <summary>
@@ -942,7 +932,7 @@ namespace Jiruffe.CSiraffe.Linq {
         /// <param name="provider">An <see cref="IFormatProvider"/> interface implementation that supplies culture-specific formatting information.</param>
         /// <returns>A <see cref="DateTime"/> instance equivalent to the value of this instance.</returns>
         DateTime IConvertible.ToDateTime(IFormatProvider provider) {
-            return As<DateTime>(provider);
+            return Convert.ToDateTime(As<DateTime>(), provider);
         }
 
         #endregion

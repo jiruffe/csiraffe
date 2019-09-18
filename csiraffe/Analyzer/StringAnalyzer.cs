@@ -22,12 +22,25 @@ using Jiruffe.CSiraffe.Linq;
 
 namespace Jiruffe.CSiraffe.Analyzer {
 
+    /// <summary>
+    /// JSON <see cref="string"/> &lt;=&gt; <see cref="JSONElement"/> conversion.
+    /// </summary>
     internal static class StringAnalyzer {
 
+        /// <summary>
+        /// JSON <see cref="string"/> =&gt; <see cref="JSONElement"/> conversion.
+        /// </summary>
+        /// <param name="str">The JSON <see cref="string"/> to be converted.</param>
+        /// <returns>The <see cref="JSONElement"/> converted.</returns>
         internal static JSONElement Analyze(string str) {
             return default;
         }
 
+        /// <summary>
+        /// <see cref="JSONElement"/> =&gt; JSON <see cref="string"/> conversion.
+        /// </summary>
+        /// <param name="element">The <see cref="JSONElement"/> to be converted.</param>
+        /// <returns>The JSON <see cref="string"/> converted.</returns>
         internal static string Analyze(JSONElement element) {
             return default;
         }

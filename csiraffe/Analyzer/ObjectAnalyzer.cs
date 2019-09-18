@@ -22,13 +22,27 @@ using Jiruffe.CSiraffe.Linq;
 
 namespace Jiruffe.CSiraffe.Analyzer {
 
+    /// <summary>
+    /// <see cref="object"/> &lt;=&gt; <see cref="JSONElement"/> conversion.
+    /// </summary>
     internal static class ObjectAnalyzer {
 
+        /// <summary>
+        /// <see cref="object"/> =&gt; <see cref="JSONElement"/> conversion.
+        /// </summary>
+        /// <param name="obj">The <see cref="object"/> to be converted.</param>
+        /// <returns>The <see cref="JSONElement"/> converted.</returns>
         internal static JSONElement Analyze(object obj) {
             return default;
         }
 
-        internal static T Analyze<T>(JSONElement element, IFormatProvider provider = default) {
+        /// <summary>
+        /// <see cref="JSONElement"/> =&gt; <see cref="object"/> conversion.
+        /// </summary>
+        /// <typeparam name="T">The target <see cref="Type"/>.</typeparam>
+        /// <param name="element">The <see cref="JSONElement"/> to be converted.</param>
+        /// <returns>The target <see cref="Type"/> <see cref="object"/> converted.</returns>
+        internal static T Analyze<T>(JSONElement element) {
             return default;
         }
 
