@@ -19,7 +19,7 @@
 using System;
 using System.Collections.Generic;
 
-namespace Jiruffe.CSiraffe.Linq {
+namespace Jiruffe.CSiraffe.Linq.Internal {
 
     /// <summary>
     /// JSON <c>null</c>, <c>undefined</c> or <c>NaN</c>.
@@ -58,7 +58,6 @@ namespace Jiruffe.CSiraffe.Linq {
         }
 
         #endregion
-
 
         #region Constructors
 

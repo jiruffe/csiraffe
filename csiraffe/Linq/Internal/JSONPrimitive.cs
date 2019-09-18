@@ -17,20 +17,19 @@
 #endregion
 
 using System;
-using System.Collections.Generic;
 
 using Jiruffe.CSiraffe.Utility;
 
-namespace Jiruffe.CSiraffe.Linq {
+namespace Jiruffe.CSiraffe.Linq.Internal {
 
     /// <summary>
-    /// JSON map {}.
+    /// JSON primitive value such as integer, string...
     /// </summary>
-    internal sealed class JSONMap : JSONElement {
+    internal sealed class JSONPrimitive : JSONElement {
 
         #region Fields
 
-        private readonly IDictionary<object, JSONElement> _Sub_Elements;
+        private readonly object _Value;
 
         #endregion
 
@@ -42,16 +41,21 @@ namespace Jiruffe.CSiraffe.Linq {
 
         #region Constructors
 
-        internal JSONMap() : this(Defaults<object, JSONElement>.Dictionary) {
+        internal JSONPrimitive() : this(Defaults.Primitive) {
         }
 
-        internal JSONMap(in IDictionary<object, JSONElement> elements) {
-            _Sub_Elements = elements;
+        internal JSONPrimitive(in object obj) {
+            _Value = obj;
         }
 
         #endregion
 
         #region Methods
+
+        public override object AsPrimitive() {
+            return _Value;
+        }
+
         #endregion
 
     }

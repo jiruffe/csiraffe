@@ -17,19 +17,20 @@
 #endregion
 
 using System;
+using System.Collections.Generic;
 
 using Jiruffe.CSiraffe.Utility;
 
-namespace Jiruffe.CSiraffe.Linq {
+namespace Jiruffe.CSiraffe.Linq.Internal {
 
     /// <summary>
-    /// JSON primitive value such as integer, string...
+    /// JSON list [].
     /// </summary>
-    internal sealed class JSONPrimitive : JSONElement {
+    internal sealed class JSONList : JSONElement {
 
         #region Fields
 
-        private readonly object _Value;
+        private readonly IList<JSONElement> _Sub_Elements;
 
         #endregion
 
@@ -41,16 +42,21 @@ namespace Jiruffe.CSiraffe.Linq {
 
         #region Constructors
 
-        internal JSONPrimitive() : this(Defaults.Primitive) {
+        internal JSONList() : this(Defaults<JSONElement>.List) {
         }
 
-        internal JSONPrimitive(in object obj) {
-            _Value = obj;
+        internal JSONList(in IList<JSONElement> elements) {
+            _Sub_Elements = elements;
         }
 
         #endregion
 
         #region Methods
+
+        public override IList<JSONElement> AsList() {
+            return _Sub_Elements;
+        }
+
         #endregion
 
     }

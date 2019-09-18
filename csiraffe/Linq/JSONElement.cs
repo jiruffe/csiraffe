@@ -22,14 +22,15 @@ using System.Collections.Generic;
 
 using Jiruffe.CSiraffe.Analyzer;
 using Jiruffe.CSiraffe.Exception;
+using Jiruffe.CSiraffe.Linq.Internal;
 using Jiruffe.CSiraffe.Utility;
 
 namespace Jiruffe.CSiraffe.Linq {
 
     /// <summary>
-    /// Represents JSON element including JSON map {}, list [], or primitive value such as integer, string...
+    /// Represents JSON element including JSON dictionary {}, list [], or primitive value such as integer, string...
     /// </summary>
-    public abstract class JSONElement : IConvertible, IDictionary<object, JSONElement> {
+    public abstract class JSONElement : IConvertible, IDictionary<string, JSONElement>, IList<JSONElement> {
 
         #region Fields
         #endregion
@@ -39,30 +40,48 @@ namespace Jiruffe.CSiraffe.Linq {
         #region Implement IDictionary
 
         /// <summary>
-        /// Get/Set sub-element with specified key.
+        /// Gets or sets the element with the specified key.
         /// </summary>
-        /// <param name="i">The specified key.</param>
-        /// <returns>The sub-element.</returns>
-        JSONElement IDictionary<object, JSONElement>.this[object i] {
+        /// <param name="key">The key of the element to get or set.</param>
+        /// <returns>The element with the specified key.</returns>
+        /// <exception cref="ArgumentNullException"><paramref name="key">key</paramref> is null.</exception>
+        /// <exception cref="KeyNotFoundException">The property is retrieved and <paramref name="key">key</paramref> is not found.</exception>
+        /// <exception cref="NotSupportedException">The property is set and the <see cref="IDictionary{TKey, TValue}"/> is read-only.</exception>
+        JSONElement IDictionary<string, JSONElement>.this[string key] {
             get {
-                if (IsMap) {
-                    return AsMap()[i];
+                if (IsDictionary) {
+                    return AsDictionary()[key];
                 }
-                if (IsList) {
-                    if (i.GetType().IsValueType || i is ValueType) {
-                        return AsList()[(int)i];
-                    }
-                    return default;
-                }
-                return this;
+                return default;
             }
             set {
-                if (IsMap) {
-                    AsMap()[i] = value;
-                } else if (IsList) {
-                    if (i is int) {
-                        AsList()[(int)i] = value;
-                    }
+                if (IsDictionary) {
+                    AsDictionary()[key] = value;
+                }
+            }
+        }
+
+        #endregion
+
+        #region Implement IList
+
+        /// <summary>
+        /// Gets or sets the element at the specified index.
+        /// </summary>
+        /// <param name="index">The zero-based index of the element to get or set.</param>
+        /// <returns>The element at the specified index.</returns>
+        /// <exception cref="ArgumentOutOfRangeException"><paramref name="index">index</paramref> is not a valid index in the <see cref="IList{T}"/>.</exception>
+        /// <exception cref="NotSupportedException">The property is set and the <see cref="IList{T}"/> is read-only.</exception>
+        JSONElement IList<JSONElement>.this[int index] {
+            get {
+                if (IsList) {
+                    return AsList()[index];
+                }
+                return default;
+            }
+            set {
+                if (IsList) {
+                    AsList()[index] = value;
                 }
             }
         }
@@ -88,7 +107,19 @@ namespace Jiruffe.CSiraffe.Linq {
         /// </summary>
         public bool IsEmpty {
             get {
-                return Entries.Count <= 0;
+                if (IsDictionary) {
+                    return AsDictionary().Count <= 0;
+                }
+                if (IsList) {
+                    return AsList().Count <= 0;
+                }
+                if (IsPrimitive) {
+                    return false;
+                }
+                if (IsVoid) {
+                    return true;
+                }
+                return default;
             }
         }
 
@@ -102,20 +133,20 @@ namespace Jiruffe.CSiraffe.Linq {
         }
 
         /// <summary>
+        /// Indicate whether this element is an instance of <see cref="JSONDictionary"/>.
+        /// </summary>
+        public bool IsDictionary {
+            get {
+                return this is JSONDictionary;
+            }
+        }
+
+        /// <summary>
         /// Indicate whether this element is an instance of <see cref="JSONList"/>.
         /// </summary>
         public bool IsList {
             get {
                 return this is JSONList;
-            }
-        }
-
-        /// <summary>
-        /// Indicate whether this element is an instance of <see cref="JSONMap"/>.
-        /// </summary>
-        public bool IsMap {
-            get {
-                return this is JSONMap;
             }
         }
 
@@ -136,11 +167,11 @@ namespace Jiruffe.CSiraffe.Linq {
                 if (IsVoid) {
                     return JSONElementType.Void;
                 }
+                if (IsDictionary) {
+                    return JSONElementType.Dictionary;
+                }
                 if (IsList) {
                     return JSONElementType.List;
-                }
-                if (IsMap) {
-                    return JSONElementType.Map;
                 }
                 if (IsPrimitive) {
                     return JSONElementType.Primitive;
@@ -149,96 +180,98 @@ namespace Jiruffe.CSiraffe.Linq {
             }
         }
 
-        /// <summary>
-        /// Get all the entries (key-value pair) of this element.
-        /// </summary>
-        public ICollection<KeyValuePair<object, JSONElement>> Entries {
-            get {
-                if (IsMap) {
-                    return AsMap();
-                }
-                if (IsList) {
-                    var lst = AsList();
-                    var rst = Defaults<KeyValuePair<object, JSONElement>>.Collection;
-                    for (var i = 0; i < lst.Count; i++) {
-                        rst.Add(new KeyValuePair<object, JSONElement>(i, lst[i]));
-                    }
-                    return rst;
-                }
-                if (IsPrimitive) {
-                    var rst = Defaults<KeyValuePair<object, JSONElement>>.Collection;
-                    rst.Add(new KeyValuePair<object, JSONElement>(AsPrimitive(), this));
-                    return rst;
-                }
-                return Defaults<KeyValuePair<object, JSONElement>>.Collection;
-            }
-        }
-
         #region Implement IDictionary
 
         /// <summary>
-        /// Get all the keys of this element.
+        /// Gets an <see cref="ICollection{T}"/> containing the keys of the <see cref="IDictionary{TKey, TValue}"/>.
         /// </summary>
-        ICollection<object> IDictionary<object, JSONElement>.Keys {
+        /// <returns>An <see cref="ICollection{T}"/> containing the keys of the object that implements <see cref="IDictionary{TKey, TValue}"/>.</returns>
+        ICollection<string> IDictionary<string, JSONElement>.Keys {
             get {
-                if (IsMap) {
-                    return AsMap().Keys;
+                if (IsDictionary) {
+                    return AsDictionary().Keys;
                 }
-                if (IsList) {
-                    var rst = Defaults<object>.Collection;
-                    for (var i = 0; i < AsList().Count; i++) {
-                        rst.Add(i);
-                    }
-                    return rst;
-                }
-                if (IsPrimitive) {
-                    var rst = Defaults<object>.Collection;
-                    rst.Add(AsPrimitive());
-                    return rst;
-                }
-                return Defaults<object>.Collection;
+
+                return default;
             }
         }
 
         /// <summary>
-        /// Get all the sub-elements of this element.
+        /// Gets an <see cref="ICollection{T}"/> containing the values in the <see cref="IDictionary{TKey, TValue}"/>.
         /// </summary>
-        ICollection<JSONElement> IDictionary<object, JSONElement>.Values {
+        /// <returns>An <see cref="ICollection{T}"/> containing the values in the object that implements <see cref="IDictionary{TKey, TValue}"/>.</returns>
+        ICollection<JSONElement> IDictionary<string, JSONElement>.Values {
             get {
-                if (IsMap) {
-                    return AsMap().Values;
+                if (IsDictionary) {
+                    return AsDictionary().Values;
                 }
-                if (IsList) {
-                    return AsList();
-                }
-                var rst = Defaults<JSONElement>.Collection;
-                rst.Add(this);
-                return rst;
+                return default;
             }
         }
 
-        #endregion
-
-        #region Implement ICollection
+        #region Implement IDictionary : ICollection
 
         /// <summary>
-        /// Returns the number of sub-elements in this element.
+        /// Gets the number of elements contained in the <see cref="ICollection{T}"/>.
         /// </summary>
-        int ICollection<KeyValuePair<object, JSONElement>>.Count {
+        /// <returns>The number of elements contained in the <see cref="ICollection{T}"/>.</returns>
+        int ICollection<KeyValuePair<string, JSONElement>>.Count {
             get {
-                return Entries.Count;
+                if (IsDictionary) {
+                    return AsDictionary().Count;
+                }
+                return default;
             }
         }
 
         /// <summary>
         /// Gets a value indicating whether the <see cref="ICollection{T}"/> is read-only.
         /// </summary>
-        /// <returns><c>true</c> if the <see cref="ICollection{T}"/> is read-only; otherwise, <c>false</c>.</returns>
-        bool ICollection<KeyValuePair<object, JSONElement>>.IsReadOnly {
+        /// <returns>true if the <see cref="ICollection{T}"/> is read-only; otherwise, false.</returns>
+        bool ICollection<KeyValuePair<string, JSONElement>>.IsReadOnly {
             get {
-                return Entries.IsReadOnly;
+                if (IsDictionary) {
+                    return AsDictionary().IsReadOnly;
+                }
+                return default;
             }
         }
+
+        #endregion
+
+        #endregion
+
+        #region Implement IList
+
+        #region Implement IList : ICollection
+
+        /// <summary>
+        /// Gets the number of elements contained in the <see cref="ICollection{T}"/>.
+        /// </summary>
+        /// <returns>The number of elements contained in the <see cref="ICollection{T}"/>.</returns>
+        int ICollection<JSONElement>.Count {
+            get {
+                if (IsList) {
+                    return AsList().Count;
+                }
+                return default;
+            }
+        }
+
+        /// <summary>
+        /// Gets a value indicating whether the <see cref="ICollection{T}"/> is read-only.
+        /// </summary>
+        /// <returns>true if the <see cref="ICollection{T}"/> is read-only; otherwise, false.</returns>
+        bool ICollection<JSONElement>.IsReadOnly {
+            get {
+                if (IsList) {
+                    return AsList().IsReadOnly;
+                }
+                return default;
+            }
+        }
+
+        #endregion
 
         #endregion
 
@@ -291,23 +324,23 @@ namespace Jiruffe.CSiraffe.Linq {
         }
 
         /// <summary>
-        /// Get a new instance of <see cref="JSONMap"/>.
+        /// Get a new instance of <see cref="JSONDictionary"/>.
         /// </summary>
-        /// <returns>A new instance of <see cref="JSONMap"/>.</returns>
-        public JSONElement Map() {
-            return new JSONMap();
+        /// <returns>A new instance of <see cref="JSONDictionary"/>.</returns>
+        public JSONElement Dictionary() {
+            return new JSONDictionary();
         }
 
         /// <summary>
-        /// Get a new instance of <see cref="JSONMap"/> with specified sub-elements.
+        /// Get a new instance of <see cref="JSONDictionary"/> with specified sub-elements.
         /// </summary>
         /// <param name="elements">The sub-elements.</param>
-        /// <returns>A new instance of <see cref="JSONMap"/> with specified sub-elements.</returns>
-        public JSONElement Map(in IDictionary<object, JSONElement> elements) {
+        /// <returns>A new instance of <see cref="JSONDictionary"/> with specified sub-elements.</returns>
+        public JSONElement Dictionary(in IDictionary<string, JSONElement> elements) {
             if (elements is null) {
-                return Map();
+                return Dictionary();
             }
-            return new JSONMap(elements);
+            return new JSONDictionary(elements);
         }
 
         /// <summary>
@@ -331,13 +364,12 @@ namespace Jiruffe.CSiraffe.Linq {
                 return (JSONElement)obj;
             }
             if (obj is JSONElement) {
-                goto err_type;
+                return Primitive();
             }
             if (obj.GetType().IsValueType || obj is ValueType || obj is string) {
                 return new JSONPrimitive(obj);
             }
-        err_type:
-            throw new UnexpectedTypeException("Use JSONElement.New(object) instead.");
+            return Primitive();
         }
 
         /// <summary>
@@ -345,8 +377,23 @@ namespace Jiruffe.CSiraffe.Linq {
         /// </summary>
         /// <param name="element">The other element.</param>
         /// <returns>This element itself.</returns>
-        public virtual JSONElement Merge(JSONElement element) {
-            throw new UnsupportedOperationException("Only merging JSONList into JSONList or JSONMap into JSONMap are supported.");
+        public JSONElement Merge(JSONElement element) {
+            if (element is null) {
+                return this;
+            }
+            if (IsDictionary && element.IsDictionary) {
+                var thisDictionary = AsDictionary();
+                foreach (var e in element.AsDictionary()) {
+                    thisDictionary.Add(e);
+                }
+            }
+            if (IsList && element.IsList) {
+                var thisList = AsList();
+                foreach (var e in element.AsList()) {
+                    thisList.Add(e);
+                }
+            }
+            throw new UnsupportedOperationException("Only merging JSONList into JSONList or JSONDictionary into JSONDictionary are supported.");
         }
 
         /// <summary>
@@ -354,15 +401,15 @@ namespace Jiruffe.CSiraffe.Linq {
         /// </summary>
         /// <returns>The <see cref="IList{T}"/> that this element represents.</returns>
         public virtual IList<JSONElement> AsList() {
-            throw new UnexpectedTypeException("Could not cast List from " + GetType().Name + ".");
+            return Defaults<JSONElement>.List;
         }
 
         /// <summary>
         /// Get the <see cref="IDictionary{TKey, TValue}"/> that this element represents.
         /// </summary>
         /// <returns>The <see cref="IDictionary{TKey, TValue}"/> that this element represents.</returns>
-        public virtual IDictionary<object, JSONElement> AsMap() {
-            return this;
+        public virtual IDictionary<string, JSONElement> AsDictionary() {
+            return Defaults<string, JSONElement>.Dictionary;
         }
 
         /// <summary>
@@ -370,7 +417,7 @@ namespace Jiruffe.CSiraffe.Linq {
         /// </summary>
         /// <returns>The original value that this element represents.</returns>
         public virtual object AsPrimitive() {
-            return this;
+            return Defaults.Primitive;
         }
 
         /// <summary>
@@ -395,9 +442,9 @@ namespace Jiruffe.CSiraffe.Linq {
         #region Override Object
 
         /// <summary>
-        /// Converts this element to JSON <see cref="string"/>.
+        /// Returns a string that represents the current object.
         /// </summary>
-        /// <returns>JSON <see cref="string"/>.</returns>
+        /// <returns>A string that represents the current object.</returns>
         public override string ToString() {
             return As<string>();
         }
@@ -413,11 +460,11 @@ namespace Jiruffe.CSiraffe.Linq {
             if (IsPrimitive) {
                 return AsPrimitive().GetHashCode();
             }
+            if (IsDictionary) {
+                return AsDictionary().GetHashCode();
+            }
             if (IsList) {
                 return AsList().GetHashCode();
-            }
-            if (IsMap) {
-                return AsMap().GetHashCode();
             }
             return ToString().GetHashCode();
         }
@@ -426,7 +473,7 @@ namespace Jiruffe.CSiraffe.Linq {
         /// Determines whether the specified object is equal to the current object.
         /// </summary>
         /// <param name="obj">The object to compare with the current object.</param>
-        /// <returns><c>true</c> if the specified object is equal to the current object; otherwise, <c>false</c>.</returns>
+        /// <returns>true if the specified object is equal to the current object; otherwise, false.</returns>
         public override bool Equals(object obj) {
             if (object.ReferenceEquals(this, obj)) {
                 return true;
@@ -446,76 +493,299 @@ namespace Jiruffe.CSiraffe.Linq {
             if (IsPrimitive) {
                 return object.Equals(AsPrimitive(), ((JSONElement)obj).AsPrimitive());
             }
+            if (IsDictionary) {
+                return object.Equals(AsDictionary(), ((JSONElement)obj).AsDictionary());
+            }
             if (IsList) {
                 return object.Equals(AsList(), ((JSONElement)obj).AsList());
             }
-            if (IsMap) {
-                return object.Equals(AsMap(), ((JSONElement)obj).AsMap());
-            }
             return object.Equals(this.ToString(), New(obj).ToString());
         }
-
         #endregion
 
         #region Implement IEnumerable
 
-        IEnumerator<KeyValuePair<object, JSONElement>> IEnumerable<KeyValuePair<object, JSONElement>>.GetEnumerator() {
-            return Entries.GetEnumerator();
-        }
-
+        /// <summary>
+        /// Returns an enumerator that iterates through a collection.
+        /// </summary>
+        /// <returns>An <see cref="IEnumerator"/> object that can be used to iterate through the collection.</returns>
         IEnumerator IEnumerable.GetEnumerator() {
-            return Entries.GetEnumerator();
+            if (IsDictionary) {
+                return AsDictionary().GetEnumerator();
+            }
+            if (IsList) {
+                return AsList().GetEnumerator();
+            }
+            return default;
         }
 
         #endregion
 
         #region Implement IDictionary
 
-        void IDictionary<object, JSONElement>.Add(object key, JSONElement value) {
-            throw new UnsupportedOperationException("Could not Add to " + GetType().Name + ".");
+        /// <summary>
+        /// Adds an element with the provided key and value to the <see cref="IDictionary{TKey, TValue}"/>.
+        /// </summary>
+        /// <param name="key">The object to use as the key of the element to add.</param>
+        /// <param name="value">The object to use as the value of the element to add.</param>
+        /// <exception cref="ArgumentNullException"><paramref name="key">key</paramref> is null.</exception>
+        /// <exception cref="ArgumentException">An element with the same key already exists in the <see cref="IDictionary{TKey, TValue}"/>.</exception>
+        /// <exception cref="NotSupportedException">The <see cref="IDictionary{TKey, TValue}"/> is read-only.</exception>
+        void IDictionary<string, JSONElement>.Add(string key, JSONElement value) {
+            if (IsDictionary) {
+                AsDictionary().Add(key, value);
+            }
         }
 
-        bool IDictionary<object, JSONElement>.ContainsKey(object key) {
-            return false;
+        /// <summary>
+        /// Determines whether the <see cref="IDictionary{TKey, TValue}"/> contains an element with the specified key.
+        /// </summary>
+        /// <param name="key">The key to locate in the <see cref="IDictionary{TKey, TValue}"/>.</param>
+        /// <returns>true if the <see cref="IDictionary{TKey, TValue}"/> contains an element with the key; otherwise, false.</returns>
+        /// <exception cref="ArgumentNullException"><paramref name="key">key</paramref> is null.</exception>
+        bool IDictionary<string, JSONElement>.ContainsKey(string key) {
+            if (IsDictionary) {
+                return AsDictionary().ContainsKey(key);
+            }
+            return default;
         }
 
-        bool IDictionary<object, JSONElement>.Remove(object key) {
-            throw new UnsupportedOperationException("Could not Remove from " + GetType().Name + ".");
+        /// <summary>
+        /// Removes the element with the specified key from the <see cref="IDictionary{TKey, TValue}"/>.
+        /// </summary>
+        /// <param name="key">The key of the element to remove.</param>
+        /// <returns>true if the element is successfully removed; otherwise, false.  This method also returns false if <paramref name="key">key</paramref> was not found in the original <see cref="IDictionary{TKey, TValue}"/>.</returns>
+        /// <exception cref="ArgumentNullException"><paramref name="key">key</paramref> is null.</exception>
+        /// <exception cref="NotSupportedException">The <see cref="IDictionary{TKey, TValue}"/> is read-only.</exception>
+        bool IDictionary<string, JSONElement>.Remove(string key) {
+            if (IsDictionary) {
+                return AsDictionary().Remove(key);
+            }
+            return default;
         }
 
-        bool IDictionary<object, JSONElement>.TryGetValue(object key, out JSONElement value) {
+        /// <summary>
+        /// Gets the value associated with the specified key.
+        /// </summary>
+        /// <param name="key">The key whose value to get.</param>
+        /// <param name="value">When this method returns, the value associated with the specified key, if the key is found; otherwise, the default value for the type of the value parameter. This parameter is passed uninitialized.</param>
+        /// <returns>true if the object that implements <see cref="IDictionary{TKey, TValue}"/> contains an element with the specified key; otherwise, false.</returns>
+        /// <exception cref="ArgumentNullException"><paramref name="key">key</paramref> is null.</exception>
+        bool IDictionary<string, JSONElement>.TryGetValue(string key, out JSONElement value) {
+            if (IsDictionary) {
+                return AsDictionary().TryGetValue(key, out value);
+            }
             value = default;
-            return false;
+            return default;
+        }
+
+        #region Implement IDictionary : ICollection
+
+        /// <summary>
+        /// Adds an item to the <see cref="ICollection{T}"/>.
+        /// </summary>
+        /// <param name="item">The object to add to the <see cref="ICollection{T}"/>.</param>
+        /// <exception cref="NotSupportedException">The <see cref="ICollection{T}"/> is read-only.</exception>
+        void ICollection<KeyValuePair<string, JSONElement>>.Add(KeyValuePair<string, JSONElement> item) {
+            if (IsDictionary) {
+                AsDictionary().Add(item);
+            }
+        }
+
+        /// <summary>
+        /// Removes all items from the <see cref="ICollection{T}"/>.
+        /// </summary>
+        /// <exception cref="NotSupportedException">The <see cref="ICollection{T}"/> is read-only.</exception>
+        void ICollection<KeyValuePair<string, JSONElement>>.Clear() {
+            if (IsDictionary) {
+                AsDictionary().Clear();
+            }
+        }
+
+        /// <summary>
+        /// Determines whether the <see cref="ICollection{T}"/> contains a specific value.
+        /// </summary>
+        /// <param name="item">The object to locate in the <see cref="ICollection{T}"/>.</param>
+        /// <returns>true if <paramref name="item">item</paramref> is found in the <see cref="ICollection{T}"/>; otherwise, false.</returns>
+        bool ICollection<KeyValuePair<string, JSONElement>>.Contains(KeyValuePair<string, JSONElement> item) {
+            if (IsDictionary) {
+                return AsDictionary().Contains(item);
+            }
+            return default;
+        }
+
+        /// <summary>
+        /// Copies the elements of the <see cref="ICollection{T}"/> to an <see cref="Array"/>, starting at a particular <see cref="Array"/> index.
+        /// </summary>
+        /// <param name="array">The one-dimensional <see cref="Array"/> that is the destination of the elements copied from <see cref="ICollection{T}"/>. The <see cref="Array"/> must have zero-based indexing.</param>
+        /// <param name="arrayIndex">The zero-based index in array at which copying begins.</param>
+        /// <exception cref="ArgumentNullException"><paramref name="array">array</paramref> is null.</exception>
+        /// <exception cref="ArgumentOutOfRangeException"><paramref name="arrayIndex">arrayIndex</paramref> is less than 0.</exception>
+        /// <exception cref="ArgumentException">The number of elements in the source <see cref="ICollection{T}"/> is greater than the available space from <paramref name="arrayIndex">arrayIndex</paramref> to the end of the destination <paramref name="array">array</paramref>.</exception>
+        void ICollection<KeyValuePair<string, JSONElement>>.CopyTo(KeyValuePair<string, JSONElement>[] array, int arrayIndex) {
+            if (IsDictionary) {
+                AsDictionary().CopyTo(array, arrayIndex);
+            }
+        }
+
+        /// <summary>
+        /// Removes the first occurrence of a specific object from the <see cref="ICollection{T}"/>.
+        /// </summary>
+        /// <param name="item">The object to remove from the <see cref="ICollection{T}"/>.</param>
+        /// <returns>true if <paramref name="item">item</paramref> was successfully removed from the <see cref="ICollection{T}"/>; otherwise, false. This method also returns false if <paramref name="item">item</paramref> is not found in the original <see cref="ICollection{T}"/>.</returns>
+        /// <exception cref="NotSupportedException">The <see cref="ICollection{T}"/> is read-only.</exception>
+        bool ICollection<KeyValuePair<string, JSONElement>>.Remove(KeyValuePair<string, JSONElement> item) {
+            if (IsDictionary) {
+                return AsDictionary().Remove(item);
+            }
+            return default;
+        }
+        
+        #region Implement IDictionary : ICollection : IEnumerable
+
+        /// <summary>
+        /// Returns an enumerator that iterates through the collection.
+        /// </summary>
+        /// <returns>An enumerator that can be used to iterate through the collection.</returns>
+        IEnumerator<KeyValuePair<string, JSONElement>> IEnumerable<KeyValuePair<string, JSONElement>>.GetEnumerator() {
+            if (IsDictionary) {
+                return AsDictionary().GetEnumerator();
+            }
+            return default;
         }
 
         #endregion
 
-        #region Implement ICollection
+        #endregion
 
-        void ICollection<KeyValuePair<object, JSONElement>>.Add(KeyValuePair<object, JSONElement> item) {
-            throw new UnsupportedOperationException("Could not Add to " + GetType().Name + ".");
+        #endregion
+
+        #region Implement IList
+
+        /// <summary>
+        /// Determines the index of a specific item in the <see cref="IList{T}"/>.
+        /// </summary>
+        /// <param name="item">The object to locate in the <see cref="IList{T}"/>.</param>
+        /// <returns>The index of <paramref name="item">item</paramref> if found in the list; otherwise, -1.</returns>
+        int IList<JSONElement>.IndexOf(JSONElement item) {
+            if (IsList) {
+                return AsList().IndexOf(item);
+            }
+            return default;
         }
 
-        void ICollection<KeyValuePair<object, JSONElement>>.Clear() {
-            throw new UnsupportedOperationException("Could not Clear from " + GetType().Name + ".");
+        /// <summary>
+        /// Inserts an item to the <see cref="IList{T}"/> at the specified index.
+        /// </summary>
+        /// <param name="index">The zero-based index at which item should be inserted.</param>
+        /// <param name="item">The object to insert into the <see cref="IList{T}"/>.</param>
+        /// <exception cref="ArgumentOutOfRangeException"><paramref name="index">index</paramref> is not a valid index in the <see cref="IList{T}"/>.</exception>
+        /// <exception cref="NotSupportedException">The <see cref="IList{T}"/> is read-only.</exception>
+        void IList<JSONElement>.Insert(int index, JSONElement item) {
+            if (IsList) {
+                AsList().Insert(index, item);
+            }
         }
 
-        bool ICollection<KeyValuePair<object, JSONElement>>.Contains(KeyValuePair<object, JSONElement> item) {
-            return Entries.Contains(item);
+        /// <summary>
+        /// Removes the <see cref="IList{T}"/> item at the specified index.
+        /// </summary>
+        /// <param name="index">The zero-based index of the item to remove.</param>
+        /// <exception cref="ArgumentOutOfRangeException"><paramref name="index">index</paramref> is not a valid index in the <see cref="IList{T}"/>.</exception>
+        /// <exception cref="NotSupportedException">The <see cref="IList{T}"/> is read-only.</exception>
+        void IList<JSONElement>.RemoveAt(int index) {
+            if (IsList) {
+                AsList().RemoveAt(index);
+            }
         }
 
-        void ICollection<KeyValuePair<object, JSONElement>>.CopyTo(KeyValuePair<object, JSONElement>[] array, int arrayIndex) {
-            Entries.CopyTo(array, arrayIndex);
+        #region Implement IList : ICollection
+
+        /// <summary>
+        /// Adds an item to the <see cref="ICollection{T}"/>.
+        /// </summary>
+        /// <param name="item">The object to add to the <see cref="ICollection{T}"/>.</param>
+        /// <exception cref="NotSupportedException">The <see cref="ICollection{T}"/> is read-only.</exception>
+        void ICollection<JSONElement>.Add(JSONElement item) {
+            if (IsList) {
+                AsList().Add(item);
+            }
         }
 
-        bool ICollection<KeyValuePair<object, JSONElement>>.Remove(KeyValuePair<object, JSONElement> item) {
-            throw new UnsupportedOperationException("Could not Remove from " + GetType().Name + ".");
+        /// <summary>
+        /// Removes all items from the <see cref="ICollection{T}"/>.
+        /// </summary>
+        /// <exception cref="NotSupportedException">The <see cref="ICollection{T}"/> is read-only.</exception>
+        void ICollection<JSONElement>.Clear() {
+            if (IsList) {
+                AsList().Clear();
+            }
         }
+
+        /// <summary>
+        /// Determines whether the <see cref="ICollection{T}"/> contains a specific value.
+        /// </summary>
+        /// <param name="item">The object to locate in the <see cref="ICollection{T}"/>.</param>
+        /// <returns>true if <paramref name="item">item</paramref> is found in the <see cref="ICollection{T}"/>; otherwise, false.</returns>
+        bool ICollection<JSONElement>.Contains(JSONElement item) {
+            if (IsList) {
+                return AsList().Contains(item);
+            }
+            return default;
+        }
+
+        /// <summary>
+        /// Copies the elements of the <see cref="ICollection{T}"/> to an <see cref="Array"/>, starting at a particular <see cref="Array"/> index.
+        /// </summary>
+        /// <param name="array">The one-dimensional <see cref="Array"/> that is the destination of the elements copied from <see cref="ICollection{T}"/>. The <see cref="Array"/> must have zero-based indexing.</param>
+        /// <param name="arrayIndex">The zero-based index in array at which copying begins.</param>
+        /// <exception cref="ArgumentNullException"><paramref name="array">array</paramref> is null.</exception>
+        /// <exception cref="ArgumentOutOfRangeException"><paramref name="arrayIndex">arrayIndex</paramref> is less than 0.</exception>
+        /// <exception cref="ArgumentException">The number of elements in the source <see cref="ICollection{T}"/> is greater than the available space from <paramref name="arrayIndex">arrayIndex</paramref> to the end of the destination <paramref name="array">array</paramref>.</exception>
+        void ICollection<JSONElement>.CopyTo(JSONElement[] array, int arrayIndex) {
+            if (IsList) {
+                AsList().CopyTo(array, arrayIndex);
+            }
+        }
+
+        /// <summary>
+        /// Removes the first occurrence of a specific object from the <see cref="ICollection{T}"/>.
+        /// </summary>
+        /// <param name="item">The object to remove from the <see cref="ICollection{T}"/>.</param>
+        /// <returns>true if <paramref name="item">item</paramref> was successfully removed from the <see cref="ICollection{T}"/>; otherwise, false. This method also returns false if <paramref name="item">item</paramref> is not found in the original <see cref="ICollection{T}"/>.</returns>
+        /// <exception cref="NotSupportedException">The <see cref="ICollection{T}"/> is read-only.</exception>
+        bool ICollection<JSONElement>.Remove(JSONElement item) {
+            if (IsList) {
+                return AsList().Remove(item);
+            }
+            return default;
+        }
+
+        #region Implement IList : ICollection : IEnumerable
+
+        /// <summary>
+        /// Returns an enumerator that iterates through the collection.
+        /// </summary>
+        /// <returns>An enumerator that can be used to iterate through the collection.</returns>
+        IEnumerator<JSONElement> IEnumerable<JSONElement>.GetEnumerator() {
+            if (IsList) {
+                return AsList().GetEnumerator();
+            }
+            return default;
+        }
+
+        #endregion
+
+        #endregion
 
         #endregion
 
         #region Implement IConvertible
 
+        /// <summary>
+        /// Returns the <see cref="TypeCode"/> for this instance.
+        /// </summary>
+        /// <returns>The enumerated constant that is the <see cref="TypeCode"/> of the class or value type that implements this interface.</returns>
         TypeCode IConvertible.GetTypeCode() {
             if (IsPrimitive) {
                 return Type.GetTypeCode(AsPrimitive().GetType());
@@ -523,66 +793,147 @@ namespace Jiruffe.CSiraffe.Linq {
             return TypeCode.Object;
         }
 
+        /// <summary>
+        /// Converts the value of this instance to an <see cref="object"/> of the specified <see cref="Type"/> that has an equivalent value, using the specified culture-specific formatting information.
+        /// </summary>
+        /// <param name="conversionType">The <see cref="Type"/> to which the value of this instance is converted.</param>
+        /// <param name="provider">An <see cref="IFormatProvider"/> interface implementation that supplies culture-specific formatting information.</param>
+        /// <returns>An <see cref="object"/> instance of type <paramref name="conversionType">conversionType</paramref> whose value is equivalent to the value of this instance.</returns>
         object IConvertible.ToType(Type conversionType, IFormatProvider provider) {
             return GetType().GetMethod("As").MakeGenericMethod(new Type[] { conversionType }).Invoke(this, new object[] { provider });
         }
 
-        bool IConvertible.ToBoolean(IFormatProvider provider) {
-            return As<bool>(provider);
-        }
-
-        byte IConvertible.ToByte(IFormatProvider provider) {
-            return As<byte>(provider);
-        }
-
-        char IConvertible.ToChar(IFormatProvider provider) {
-            return As<char>(provider);
-        }
-
-        decimal IConvertible.ToDecimal(IFormatProvider provider) {
-            return As<decimal>(provider);
-        }
-
-        double IConvertible.ToDouble(IFormatProvider provider) {
-            return As<double>(provider);
-        }
-
-        short IConvertible.ToInt16(IFormatProvider provider) {
-            return As<short>(provider);
-        }
-
-        int IConvertible.ToInt32(IFormatProvider provider) {
-            return As<int>(provider);
-        }
-
-        long IConvertible.ToInt64(IFormatProvider provider) {
-            return As<long>(provider);
-        }
-
-        sbyte IConvertible.ToSByte(IFormatProvider provider) {
-            return As<sbyte>(provider);
-        }
-
-        float IConvertible.ToSingle(IFormatProvider provider) {
-            return As<float>(provider);
-        }
-
+        /// <summary>
+        /// Converts the value of this instance to an equivalent <see cref="string"/> using the specified culture-specific formatting information.
+        /// </summary>
+        /// <param name="provider">An <see cref="IFormatProvider"/> interface implementation that supplies culture-specific formatting information.</param>
+        /// <returns>A <see cref="string"/> instance equivalent to the value of this instance.</returns>
         string IConvertible.ToString(IFormatProvider provider) {
             return As<string>(provider);
         }
 
+        /// <summary>
+        /// Converts the value of this instance to an equivalent Boolean value using the specified culture-specific formatting information.
+        /// </summary>
+        /// <param name="provider">An <see cref="IFormatProvider"/> interface implementation that supplies culture-specific formatting information.</param>
+        /// <returns>A Boolean value equivalent to the value of this instance.</returns>
+        bool IConvertible.ToBoolean(IFormatProvider provider) {
+            return As<bool>(provider);
+        }
+
+        /// <summary>
+        /// Converts the value of this instance to an equivalent 8-bit unsigned integer using the specified culture-specific formatting information.
+        /// </summary>
+        /// <param name="provider">An <see cref="IFormatProvider"/> interface implementation that supplies culture-specific formatting information.</param>
+        /// <returns>An 8-bit unsigned integer equivalent to the value of this instance.</returns>
+        byte IConvertible.ToByte(IFormatProvider provider) {
+            return As<byte>(provider);
+        }
+
+        /// <summary>
+        /// Converts the value of this instance to an equivalent Unicode character using the specified culture-specific formatting information.
+        /// </summary>
+        /// <param name="provider">An <see cref="IFormatProvider"/> interface implementation that supplies culture-specific formatting information.</param>
+        /// <returns>A Unicode character equivalent to the value of this instance.</returns>
+        char IConvertible.ToChar(IFormatProvider provider) {
+            return As<char>(provider);
+        }
+
+        /// <summary>
+        /// Converts the value of this instance to an equivalent <see cref="decimal"/> number using the specified culture-specific formatting information.
+        /// </summary>
+        /// <param name="provider">An <see cref="IFormatProvider"/> interface implementation that supplies culture-specific formatting information.</param>
+        /// <returns>A <see cref="decimal"/> number equivalent to the value of this instance.</returns>
+        decimal IConvertible.ToDecimal(IFormatProvider provider) {
+            return As<decimal>(provider);
+        }
+
+        /// <summary>
+        /// Converts the value of this instance to an equivalent double-precision floating-point number using the specified culture-specific formatting information.
+        /// </summary>
+        /// <param name="provider">An <see cref="IFormatProvider"/> interface implementation that supplies culture-specific formatting information.</param>
+        /// <returns>A double-precision floating-point number equivalent to the value of this instance.</returns>
+        double IConvertible.ToDouble(IFormatProvider provider) {
+            return As<double>(provider);
+        }
+
+        /// <summary>
+        /// Converts the value of this instance to an equivalent 16-bit signed integer using the specified culture-specific formatting information.
+        /// </summary>
+        /// <param name="provider">An <see cref="IFormatProvider"/> interface implementation that supplies culture-specific formatting information.</param>
+        /// <returns>An 16-bit signed integer equivalent to the value of this instance.</returns>
+        short IConvertible.ToInt16(IFormatProvider provider) {
+            return As<short>(provider);
+        }
+
+        /// <summary>
+        /// Converts the value of this instance to an equivalent 32-bit signed integer using the specified culture-specific formatting information.
+        /// </summary>
+        /// <param name="provider">An <see cref="IFormatProvider"/> interface implementation that supplies culture-specific formatting information.</param>
+        /// <returns>An 32-bit signed integer equivalent to the value of this instance.</returns>
+        int IConvertible.ToInt32(IFormatProvider provider) {
+            return As<int>(provider);
+        }
+
+        /// <summary>
+        /// Converts the value of this instance to an equivalent 64-bit signed integer using the specified culture-specific formatting information.
+        /// </summary>
+        /// <param name="provider">An <see cref="IFormatProvider"/> interface implementation that supplies culture-specific formatting information.</param>
+        /// <returns>An 64-bit signed integer equivalent to the value of this instance.</returns>
+        long IConvertible.ToInt64(IFormatProvider provider) {
+            return As<long>(provider);
+        }
+
+        /// <summary>
+        /// Converts the value of this instance to an equivalent 8-bit signed integer using the specified culture-specific formatting information.
+        /// </summary>
+        /// <param name="provider">An <see cref="IFormatProvider"/> interface implementation that supplies culture-specific formatting information.</param>
+        /// <returns>An 8-bit signed integer equivalent to the value of this instance.</returns>
+        sbyte IConvertible.ToSByte(IFormatProvider provider) {
+            return As<sbyte>(provider);
+        }
+
+        /// <summary>
+        /// Converts the value of this instance to an equivalent single-precision floating-point number using the specified culture-specific formatting information.
+        /// </summary>
+        /// <param name="provider">An <see cref="IFormatProvider"/> interface implementation that supplies culture-specific formatting information.</param>
+        /// <returns>A single-precision floating-point number equivalent to the value of this instance.</returns>
+        float IConvertible.ToSingle(IFormatProvider provider) {
+            return As<float>(provider);
+        }
+
+        /// <summary>
+        /// Converts the value of this instance to an equivalent 16-bit unsigned integer using the specified culture-specific formatting information.
+        /// </summary>
+        /// <param name="provider">An <see cref="IFormatProvider"/> interface implementation that supplies culture-specific formatting information.</param>
+        /// <returns>An 16-bit unsigned integer equivalent to the value of this instance.</returns>
         ushort IConvertible.ToUInt16(IFormatProvider provider) {
             return As<ushort>(provider);
         }
 
+        /// <summary>
+        /// Converts the value of this instance to an equivalent 32-bit unsigned integer using the specified culture-specific formatting information.
+        /// </summary>
+        /// <param name="provider">An <see cref="IFormatProvider"/> interface implementation that supplies culture-specific formatting information.</param>
+        /// <returns>An 32-bit unsigned integer equivalent to the value of this instance.</returns>
         uint IConvertible.ToUInt32(IFormatProvider provider) {
             return As<uint>(provider);
         }
 
+        /// <summary>
+        /// Converts the value of this instance to an equivalent 64-bit unsigned integer using the specified culture-specific formatting information.
+        /// </summary>
+        /// <param name="provider">An <see cref="IFormatProvider"/> interface implementation that supplies culture-specific formatting information.</param>
+        /// <returns>An 64-bit unsigned integer equivalent to the value of this instance.</returns>
         ulong IConvertible.ToUInt64(IFormatProvider provider) {
             return As<ulong>(provider);
         }
 
+        /// <summary>
+        /// Converts the value of this instance to an equivalent <see cref="DateTime"/> using the specified culture-specific formatting information.
+        /// </summary>
+        /// <param name="provider">An <see cref="IFormatProvider"/> interface implementation that supplies culture-specific formatting information.</param>
+        /// <returns>A <see cref="DateTime"/> instance equivalent to the value of this instance.</returns>
         DateTime IConvertible.ToDateTime(IFormatProvider provider) {
             return As<DateTime>(provider);
         }
@@ -597,30 +948,36 @@ namespace Jiruffe.CSiraffe.Linq {
     /// Represents JSON elements types.
     /// </summary>
     public enum JSONElementType {
+
         /// <summary>
         /// Unknown element type.
         /// </summary>
         Unknown,
+
+        /// <summary>
+        /// JSON dictionary {}.
+        /// <seealso cref="JSONDictionary"/>
+        /// </summary>
+        Dictionary,
+
         /// <summary>
         /// JSON list [].
         /// <seealso cref="JSONList"/>
         /// </summary>
         List,
-        /// <summary>
-        /// JSON map {}.
-        /// <seealso cref="JSONMap"/>
-        /// </summary>
-        Map,
+
         /// <summary>
         /// JSON primitive value such as integer, string...
         /// <seealso cref="JSONPrimitive"/>
         /// </summary>
         Primitive,
+
         /// <summary>
         /// JSON <c>null</c>, <c>undefined</c> or <c>NaN</c>.
         /// <seealso cref="JSONVoid"/>
         /// </summary>
         Void
+
     }
 
 }

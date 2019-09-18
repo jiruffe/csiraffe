@@ -9,5 +9,6 @@
     <Folder Include="Analyzer\" />
     <Folder Include="Exception\" />
     <Folder Include="Utility\" />
+    <Folder Include="Linq\Internal\" />
   </ItemGroup>
 </Project>

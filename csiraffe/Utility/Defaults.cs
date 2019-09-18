@@ -34,15 +34,15 @@ namespace Jiruffe.CSiraffe.Utility {
 
     internal static class Defaults<T> {
 
-        internal static ICollection<T> Collection {
-            get {
-                return List;
-            }
-        }
-
         internal static IList<T> List {
             get {
                 return new List<T>();
+            }
+        }
+
+        internal static IEnumerable<T> Enumerable {
+            get {
+                return 
             }
         }
 

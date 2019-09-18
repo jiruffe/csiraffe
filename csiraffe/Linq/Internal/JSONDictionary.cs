@@ -21,16 +21,16 @@ using System.Collections.Generic;
 
 using Jiruffe.CSiraffe.Utility;
 
-namespace Jiruffe.CSiraffe.Linq {
+namespace Jiruffe.CSiraffe.Linq.Internal {
 
     /// <summary>
-    /// JSON list [].
+    /// JSON dictionary {}.
     /// </summary>
-    internal sealed class JSONList : JSONElement {
+    internal sealed class JSONDictionary : JSONElement {
 
         #region Fields
 
-        private readonly IList<JSONElement> _Sub_Elements;
+        private readonly IDictionary<string, JSONElement> _Sub_Elements;
 
         #endregion
 
@@ -42,10 +42,10 @@ namespace Jiruffe.CSiraffe.Linq {
 
         #region Constructors
 
-        internal JSONList() : this(Defaults<JSONElement>.List) {
+        internal JSONDictionary() : this(Defaults<string, JSONElement>.Dictionary) {
         }
 
-        internal JSONList(in IList<JSONElement> elements) {
+        internal JSONDictionary(in IDictionary<string, JSONElement> elements) {
             _Sub_Elements = elements;
         }
 
@@ -53,7 +53,8 @@ namespace Jiruffe.CSiraffe.Linq {
 
         #region Methods
 
-        public override IList<JSONElement> AsList() {
+        public override IDictionary<string, JSONElement> AsDictionary() {
+            return _Sub_Elements;
         }
 
         #endregion
