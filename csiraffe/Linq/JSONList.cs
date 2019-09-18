@@ -30,7 +30,7 @@ namespace Jiruffe.CSiraffe.Linq {
 
         #region Fields
 
-        private readonly ICollection<JSONElement> _Sub_Elements;
+        private readonly IList<JSONElement> _Sub_Elements;
 
         #endregion
 
@@ -42,10 +42,10 @@ namespace Jiruffe.CSiraffe.Linq {
 
         #region Constructors
 
-        internal JSONList() : this(Defaults<JSONElement>.Collection) {
+        internal JSONList() : this(Defaults<JSONElement>.List) {
         }
 
-        internal JSONList(in ICollection<JSONElement> elements) {
+        internal JSONList(in IList<JSONElement> elements) {
             _Sub_Elements = elements;
         }
 

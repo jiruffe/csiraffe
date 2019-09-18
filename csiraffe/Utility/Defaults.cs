@@ -36,6 +36,12 @@ namespace Jiruffe.CSiraffe.Utility {
 
         internal static ICollection<T> Collection {
             get {
+                return List;
+            }
+        }
+
+        internal static IList<T> List {
+            get {
                 return new List<T>();
             }
         }
