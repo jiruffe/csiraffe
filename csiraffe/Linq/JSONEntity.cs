@@ -291,7 +291,7 @@ namespace Jiruffe.CSiraffe.Linq {
         /// <para>Use <see cref="New(in object)"/> instead.</para>
         /// </summary>
         /// <returns>What <see cref="Void"/> returns.</returns>
-        [Obsolete("Deprecated. Use JSONentity.New(object) instead.")]
+        [Obsolete("Deprecated. Use JSONEntity.New(object) instead.")]
         public JSONEntity New() {
             return Void;
         }
