@@ -40,12 +40,6 @@ namespace Jiruffe.CSiraffe.Utility {
             }
         }
 
-        internal static IEnumerable<T> Enumerable {
-            get {
-                return 
-            }
-        }
-
     }
 
     internal static class Defaults<K, V> {
