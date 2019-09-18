@@ -40,10 +40,10 @@ namespace Jiruffe.CSiraffe.Linq {
         #region Implement IDictionary
 
         /// <summary>
-        /// Gets or sets the entity with the specified key.
+        /// Gets or sets the element with the specified key.
         /// </summary>
-        /// <param name="key">The key of the entity to get or set.</param>
-        /// <returns>The entity with the specified key.</returns>
+        /// <param name="key">The key of the element to get or set.</param>
+        /// <returns>The element with the specified key.</returns>
         /// <exception cref="ArgumentNullException"><paramref name="key">key</paramref> is null.</exception>
         /// <exception cref="KeyNotFoundException">The property is retrieved and <paramref name="key">key</paramref> is not found.</exception>
         /// <exception cref="NotSupportedException">The property is set and the <see cref="IDictionary{TKey, TValue}"/> is read-only.</exception>
@@ -66,10 +66,10 @@ namespace Jiruffe.CSiraffe.Linq {
         #region Implement IList
 
         /// <summary>
-        /// Gets or sets the entity at the specified index.
+        /// Gets or sets the element at the specified index.
         /// </summary>
-        /// <param name="index">The zero-based index of the entity to get or set.</param>
-        /// <returns>The entity at the specified index.</returns>
+        /// <param name="index">The zero-based index of the element to get or set.</param>
+        /// <returns>The element at the specified index.</returns>
         /// <exception cref="ArgumentOutOfRangeException"><paramref name="index">index</paramref> is not a valid index in the <see cref="IList{T}"/>.</exception>
         /// <exception cref="NotSupportedException">The property is set and the <see cref="IList{T}"/> is read-only.</exception>
         JSONEntity IList<JSONEntity>.this[int index] {
@@ -169,7 +169,7 @@ namespace Jiruffe.CSiraffe.Linq {
         /// Get the <see cref="JSONEntityType"/> of this entity.
         /// </summary>
         /// <returns>The <see cref="JSONEntityType"/> of this entity</returns>
-        public JSONEntityType entityType {
+        public JSONEntityType EntityType {
             get {
                 if (IsVoid) {
                     return JSONEntityType.Void;
@@ -219,9 +219,9 @@ namespace Jiruffe.CSiraffe.Linq {
         #region Implement IDictionary : ICollection
 
         /// <summary>
-        /// Gets the number of entities contained in the <see cref="ICollection{T}"/>.
+        /// Gets the number of elements contained in the <see cref="ICollection{T}"/>.
         /// </summary>
-        /// <returns>The number of entities contained in the <see cref="ICollection{T}"/>.</returns>
+        /// <returns>The number of elements contained in the <see cref="ICollection{T}"/>.</returns>
         int ICollection<KeyValuePair<string, JSONEntity>>.Count {
             get {
                 if (IsDictionary) {
@@ -253,9 +253,9 @@ namespace Jiruffe.CSiraffe.Linq {
         #region Implement IList : ICollection
 
         /// <summary>
-        /// Gets the number of entities contained in the <see cref="ICollection{T}"/>.
+        /// Gets the number of elements contained in the <see cref="ICollection{T}"/>.
         /// </summary>
-        /// <returns>The number of entities contained in the <see cref="ICollection{T}"/>.</returns>
+        /// <returns>The number of elements contained in the <see cref="ICollection{T}"/>.</returns>
         int ICollection<JSONEntity>.Count {
             get {
                 if (IsList) {
@@ -482,7 +482,7 @@ namespace Jiruffe.CSiraffe.Linq {
             if (!(obj is JSONEntity)) {
                 return false;
             }
-            if (entityType != ((JSONEntity)obj).entityType) {
+            if (EntityType != ((JSONEntity)obj).EntityType) {
                 return false;
             }
             if (IsVoid) {
@@ -522,12 +522,12 @@ namespace Jiruffe.CSiraffe.Linq {
         #region Implement IDictionary
 
         /// <summary>
-        /// Adds an entity with the provided key and value to the <see cref="IDictionary{TKey, TValue}"/>.
+        /// Adds an element with the provided key and value to the <see cref="IDictionary{TKey, TValue}"/>.
         /// </summary>
-        /// <param name="key">The object to use as the key of the entity to add.</param>
-        /// <param name="value">The object to use as the value of the entity to add.</param>
+        /// <param name="key">The object to use as the key of the element to add.</param>
+        /// <param name="value">The object to use as the value of the element to add.</param>
         /// <exception cref="ArgumentNullException"><paramref name="key">key</paramref> is null.</exception>
-        /// <exception cref="ArgumentException">An entity with the same key already exists in the <see cref="IDictionary{TKey, TValue}"/>.</exception>
+        /// <exception cref="ArgumentException">An element with the same key already exists in the <see cref="IDictionary{TKey, TValue}"/>.</exception>
         /// <exception cref="NotSupportedException">The <see cref="IDictionary{TKey, TValue}"/> is read-only.</exception>
         void IDictionary<string, JSONEntity>.Add(string key, JSONEntity value) {
             if (IsDictionary) {
@@ -536,10 +536,10 @@ namespace Jiruffe.CSiraffe.Linq {
         }
 
         /// <summary>
-        /// Determines whether the <see cref="IDictionary{TKey, TValue}"/> contains an entity with the specified key.
+        /// Determines whether the <see cref="IDictionary{TKey, TValue}"/> contains an element with the specified key.
         /// </summary>
         /// <param name="key">The key to locate in the <see cref="IDictionary{TKey, TValue}"/>.</param>
-        /// <returns>true if the <see cref="IDictionary{TKey, TValue}"/> contains an entity with the key; otherwise, false.</returns>
+        /// <returns>true if the <see cref="IDictionary{TKey, TValue}"/> contains an element with the key; otherwise, false.</returns>
         /// <exception cref="ArgumentNullException"><paramref name="key">key</paramref> is null.</exception>
         bool IDictionary<string, JSONEntity>.ContainsKey(string key) {
             if (IsDictionary) {
@@ -549,10 +549,10 @@ namespace Jiruffe.CSiraffe.Linq {
         }
 
         /// <summary>
-        /// Removes the entity with the specified key from the <see cref="IDictionary{TKey, TValue}"/>.
+        /// Removes the element with the specified key from the <see cref="IDictionary{TKey, TValue}"/>.
         /// </summary>
-        /// <param name="key">The key of the entity to remove.</param>
-        /// <returns>true if the entity is successfully removed; otherwise, false.  This method also returns false if <paramref name="key">key</paramref> was not found in the original <see cref="IDictionary{TKey, TValue}"/>.</returns>
+        /// <param name="key">The key of the element to remove.</param>
+        /// <returns>true if the element is successfully removed; otherwise, false.  This method also returns false if <paramref name="key">key</paramref> was not found in the original <see cref="IDictionary{TKey, TValue}"/>.</returns>
         /// <exception cref="ArgumentNullException"><paramref name="key">key</paramref> is null.</exception>
         /// <exception cref="NotSupportedException">The <see cref="IDictionary{TKey, TValue}"/> is read-only.</exception>
         bool IDictionary<string, JSONEntity>.Remove(string key) {
@@ -567,7 +567,7 @@ namespace Jiruffe.CSiraffe.Linq {
         /// </summary>
         /// <param name="key">The key whose value to get.</param>
         /// <param name="value">When this method returns, the value associated with the specified key, if the key is found; otherwise, the default value for the type of the value parameter. This parameter is passed uninitialized.</param>
-        /// <returns>true if the object that implements <see cref="IDictionary{TKey, TValue}"/> contains an entity with the specified key; otherwise, false.</returns>
+        /// <returns>true if the object that implements <see cref="IDictionary{TKey, TValue}"/> contains an element with the specified key; otherwise, false.</returns>
         /// <exception cref="ArgumentNullException"><paramref name="key">key</paramref> is null.</exception>
         bool IDictionary<string, JSONEntity>.TryGetValue(string key, out JSONEntity value) {
             if (IsDictionary) {
@@ -613,13 +613,13 @@ namespace Jiruffe.CSiraffe.Linq {
         }
 
         /// <summary>
-        /// Copies the entities of the <see cref="ICollection{T}"/> to an <see cref="Array"/>, starting at a particular <see cref="Array"/> index.
+        /// Copies the elements of the <see cref="ICollection{T}"/> to an <see cref="Array"/>, starting at a particular <see cref="Array"/> index.
         /// </summary>
-        /// <param name="array">The one-dimensional <see cref="Array"/> that is the destination of the entities copied from <see cref="ICollection{T}"/>. The <see cref="Array"/> must have zero-based indexing.</param>
+        /// <param name="array">The one-dimensional <see cref="Array"/> that is the destination of the elements copied from <see cref="ICollection{T}"/>. The <see cref="Array"/> must have zero-based indexing.</param>
         /// <param name="arrayIndex">The zero-based index in array at which copying begins.</param>
         /// <exception cref="ArgumentNullException"><paramref name="array">array</paramref> is null.</exception>
         /// <exception cref="ArgumentOutOfRangeException"><paramref name="arrayIndex">arrayIndex</paramref> is less than 0.</exception>
-        /// <exception cref="ArgumentException">The number of entities in the source <see cref="ICollection{T}"/> is greater than the available space from <paramref name="arrayIndex">arrayIndex</paramref> to the end of the destination <paramref name="array">array</paramref>.</exception>
+        /// <exception cref="ArgumentException">The number of elements in the source <see cref="ICollection{T}"/> is greater than the available space from <paramref name="arrayIndex">arrayIndex</paramref> to the end of the destination <paramref name="array">array</paramref>.</exception>
         void ICollection<KeyValuePair<string, JSONEntity>>.CopyTo(KeyValuePair<string, JSONEntity>[] array, int arrayIndex) {
             if (IsDictionary) {
                 AsDictionary().CopyTo(array, arrayIndex);
@@ -733,13 +733,13 @@ namespace Jiruffe.CSiraffe.Linq {
         }
 
         /// <summary>
-        /// Copies the entities of the <see cref="ICollection{T}"/> to an <see cref="Array"/>, starting at a particular <see cref="Array"/> index.
+        /// Copies the elements of the <see cref="ICollection{T}"/> to an <see cref="Array"/>, starting at a particular <see cref="Array"/> index.
         /// </summary>
-        /// <param name="array">The one-dimensional <see cref="Array"/> that is the destination of the entities copied from <see cref="ICollection{T}"/>. The <see cref="Array"/> must have zero-based indexing.</param>
+        /// <param name="array">The one-dimensional <see cref="Array"/> that is the destination of the elements copied from <see cref="ICollection{T}"/>. The <see cref="Array"/> must have zero-based indexing.</param>
         /// <param name="arrayIndex">The zero-based index in array at which copying begins.</param>
         /// <exception cref="ArgumentNullException"><paramref name="array">array</paramref> is null.</exception>
         /// <exception cref="ArgumentOutOfRangeException"><paramref name="arrayIndex">arrayIndex</paramref> is less than 0.</exception>
-        /// <exception cref="ArgumentException">The number of entities in the source <see cref="ICollection{T}"/> is greater than the available space from <paramref name="arrayIndex">arrayIndex</paramref> to the end of the destination <paramref name="array">array</paramref>.</exception>
+        /// <exception cref="ArgumentException">The number of elements in the source <see cref="ICollection{T}"/> is greater than the available space from <paramref name="arrayIndex">arrayIndex</paramref> to the end of the destination <paramref name="array">array</paramref>.</exception>
         void ICollection<JSONEntity>.CopyTo(JSONEntity[] array, int arrayIndex) {
             if (IsList) {
                 AsList().CopyTo(array, arrayIndex);
