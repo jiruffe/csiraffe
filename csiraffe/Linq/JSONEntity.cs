@@ -292,7 +292,7 @@ namespace Jiruffe.CSiraffe.Linq {
         /// </summary>
         /// <returns>What <see cref="Void"/> returns.</returns>
         [Obsolete("Deprecated. Use JSONEntity.New(in object) instead.")]
-        public JSONEntity New() {
+        public static JSONEntity New() {
             return Void;
         }
 
@@ -301,7 +301,7 @@ namespace Jiruffe.CSiraffe.Linq {
         /// </summary>
         /// <param name="obj">The original <see cref="object"/>.</param>
         /// <returns>A new instance of <see cref="JSONEntity"/> with specified original <see cref="object"/>.</returns>
-        public JSONEntity New(in object obj) {
+        public static JSONEntity New(in object obj) {
             if (obj is null) {
                 return New();
             }
@@ -315,7 +315,7 @@ namespace Jiruffe.CSiraffe.Linq {
         /// Get a new instance of <see cref="JSONList"/>.
         /// </summary>
         /// <returns>A new instance of <see cref="JSONList"/>.</returns>
-        public JSONEntity List() {
+        public static JSONEntity List() {
             return new JSONList();
         }
 
@@ -324,7 +324,7 @@ namespace Jiruffe.CSiraffe.Linq {
         /// </summary>
         /// <param name="entities">The sub-entities.</param>
         /// <returns>A new instance of <see cref="JSONList"/> with specified sub-entities.</returns>
-        public JSONEntity List(in IList<JSONEntity> entities) {
+        public static JSONEntity List(in IList<JSONEntity> entities) {
             if (entities is null) {
                 return List();
             }
@@ -335,7 +335,7 @@ namespace Jiruffe.CSiraffe.Linq {
         /// Get a new instance of <see cref="JSONDictionary"/>.
         /// </summary>
         /// <returns>A new instance of <see cref="JSONDictionary"/>.</returns>
-        public JSONEntity Dictionary() {
+        public static JSONEntity Dictionary() {
             return new JSONDictionary();
         }
 
@@ -344,7 +344,7 @@ namespace Jiruffe.CSiraffe.Linq {
         /// </summary>
         /// <param name="entities">The sub-entities.</param>
         /// <returns>A new instance of <see cref="JSONDictionary"/> with specified sub-entities.</returns>
-        public JSONEntity Dictionary(in IDictionary<string, JSONEntity> entities) {
+        public static JSONEntity Dictionary(in IDictionary<string, JSONEntity> entities) {
             if (entities is null) {
                 return Dictionary();
             }
@@ -355,7 +355,7 @@ namespace Jiruffe.CSiraffe.Linq {
         /// Get a new instance of <see cref="JSONPrimitive"/>.
         /// </summary>
         /// <returns>A new instance of <see cref="JSONPrimitive"/>.</returns>
-        public JSONEntity Primitive() {
+        public static JSONEntity Primitive() {
             return new JSONPrimitive();
         }
 
@@ -364,7 +364,7 @@ namespace Jiruffe.CSiraffe.Linq {
         /// </summary>
         /// <param name="obj">The original value.</param>
         /// <returns>A new instance of <see cref="JSONPrimitive"/> with specified original value.</returns>
-        public JSONEntity Primitive(in object obj) {
+        public static JSONEntity Primitive(in object obj) {
             if (obj is null) {
                 return Primitive();
             }

@@ -85,6 +85,14 @@ namespace Jiruffe.CSiraffe.Utility {
 
         }
 
+        internal static bool SurroundedWith(this string str, string value) {
+            return str.StartsWith(value) && str.EndsWith(value);
+        }
+
+        internal static bool SurroundedWith(this string str, char value) {
+            return str.StartsWith(value) && str.EndsWith(value);
+        }
+
     }
 
 }

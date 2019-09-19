@@ -56,6 +56,8 @@ namespace Jiruffe.CSiraffe.Utility {
             internal static readonly char VISIBLE_ASCII_CHARACTER_WITH_MAX_CODE = '~';
             internal static readonly char ESCAPE_SYMBOL = '\\';
             internal static readonly char UNICODE_SYMBOL = 'u';
+            internal static readonly char APOSTROPHE = '\'';
+            internal static readonly char QUOTE = '"';
 
             static Characters() {
 
