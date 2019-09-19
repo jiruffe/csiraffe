@@ -19,6 +19,7 @@
 using System;
 
 using Jiruffe.CSiraffe.Linq;
+using Jiruffe.CSiraffe.Utility;
 
 namespace Jiruffe.CSiraffe.Analyzer {
 
@@ -33,7 +34,20 @@ namespace Jiruffe.CSiraffe.Analyzer {
         /// <param name="str">The JSON <see cref="string"/> to be converted.</param>
         /// <returns>The <see cref="JSONEntity"/> converted.</returns>
         internal static JSONEntity Analyze(string str) {
-            return default;
+
+            if (str is null) {
+                goto exit_with_void;
+            }
+
+            str = str.Trim();
+
+            if (!str.StartsWith(Constants.Tokens.JSONDictionaryStart) && !str.StartsWith(Constants.Tokens.JSONListStart)) {
+
+            }
+
+            exit_with_void:
+            return JSONEntity.Void;
+
         }
 
         /// <summary>
