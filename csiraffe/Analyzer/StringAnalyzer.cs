@@ -17,6 +17,9 @@
 #endregion
 
 using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
 
 using Jiruffe.CSiraffe.Linq;
 using Jiruffe.CSiraffe.Utility;
@@ -45,6 +48,102 @@ namespace Jiruffe.CSiraffe.Analyzer {
                 return Convert.FromString(str);
             }
 
+            Stack<JSONEntity> bases = new Stack<JSONEntity>();
+            Stack<string> keys = new Stack<string>();
+            StringBuilder sb = new StringBuilder();
+            char last_token = Constants.Characters.NULL;
+
+            foreach (var c in str) {
+
+                if (Constants.Characters.QUOTE == last_token || Constants.Characters.APOSTROPHE == last_token) {
+                    if (last_token == c) {
+                        last_token = Constants.Characters.NULL;
+                    }
+                    sb.Append(c);
+                    continue;
+                }
+
+                switch (c) {
+
+                    case Constants.Characters.QUOTE:
+                    case Constants.Characters.APOSTROPHE:
+                        sb.Append(c);
+                        last_token = c;
+                        break;
+
+                    case Constants.Tokens.JSONDictionaryStart:
+                        bases.Push(JSONEntity.Dictionary());
+                        last_token = c;
+                        break;
+
+                    case Constants.Tokens.JSONListStart:
+                        bases.Push(JSONEntity.List());
+                        last_token = c;
+                        break;
+
+                    case Constants.Tokens.JSONDictionaryKey:
+                        var tkey = sb.ToString();
+                        keys.Push((tkey.SurroundedWith(Constants.Characters.APOSTROPHE) || tkey.SurroundedWith(Constants.Characters.QUOTE) ? tkey.Substring(1, tkey.Length - 1) : tkey).Unescape()); ;
+                        sb.Clear();
+                        last_token = c;
+                        break;
+
+                    case Constants.Tokens.JSONSeparator:
+                        JSONEntity current_entity = bases.Peek();
+                        if (current_entity.IsDictionary) {
+                            current_entity.AsDictionary().Add(keys.Pop(), Convert.FromString(sb.ToString()));
+                        } else if (current_entity.IsList) {
+                            current_entity.AsList().Add(Convert.FromString(sb.ToString()));
+                        }
+                        sb.Clear();
+                        last_token = c;
+                        break;
+
+                    case Constants.Tokens.JSONDictionaryEnd:
+                        JSONEntity current_dictionary = bases.Pop();
+                        current_dictionary.AsDictionary().Add(keys.Pop(), Convert.FromString(sb.ToString()));
+                        sb.Clear();
+                        last_token = c;
+                        if (0 >= bases.Count) {
+                            return current_dictionary;
+                        } else {
+                            JSONEntity base_entity = bases.Peek();
+                            if (base_entity.IsDictionary) {
+                                base_entity.AsDictionary().Add(keys.Pop(), current_dictionary);
+                            } else if (base_entity.IsList) {
+                                base_entity.AsList().Add(current_dictionary);
+                            }
+                        }
+                        break;
+
+                    case Constants.Tokens.JSONListEnd:
+                        JSONEntity current_list = bases.Pop();
+                        current_list.AsList().Add(Convert.FromString(sb.ToString()));
+                        sb.Clear();
+                        last_token = c;
+                        if (0 >= bases.Count) {
+                            return current_list;
+                        } else {
+                            JSONEntity base_entity = bases.Peek();
+                            if (base_entity.IsDictionary) {
+                                base_entity.AsDictionary().Add(keys.Pop(), current_list);
+                            } else if (base_entity.IsList) {
+                                base_entity.AsList().Add(current_list);
+                            }
+                        }
+                        break;
+
+                    default:
+                        if (0 < sb.Length || c.IsVisibleAndNotSpace()) {
+                            last_token = Constants.Characters.NULL;
+                            sb.Append(c);
+                        }
+                        break;
+
+                }
+
+            }
+
             exit_with_void:
             return JSONEntity.Void;
 
@@ -56,14 +155,52 @@ namespace Jiruffe.CSiraffe.Analyzer {
         /// <param name="entity">The <see cref="JSONEntity"/> to be converted.</param>
         /// <returns>The JSON <see cref="string"/> converted.</returns>
         internal static string Analyze(JSONEntity entity) {
-            return default;
+
+            StringBuilder sb = new StringBuilder();
+
+            switch (entity.EntityType) {
+
+                case JSONEntityType.Dictionary:
+                    sb.Append(Constants.Tokens.JSONDictionaryStart);
+                    sb.Append(string.Join(Constants.Tokens.JSONSeparator, from e in entity.AsDictionary() select $"{Constants.Characters.QUOTE}{e.Key}{Constants.Characters.QUOTE}{Constants.Tokens.JSONDictionaryKey}{Analyze(e.Value)}"));
+                    sb.Append(Constants.Tokens.JSONDictionaryEnd);
+                    break;
+
+                case JSONEntityType.List:
+                    sb.Append(Constants.Tokens.JSONDictionaryStart);
+                    sb.Append(string.Join(Constants.Tokens.JSONSeparator, from e in entity.AsList() select Analyze(e)));
+                    sb.Append(Constants.Tokens.JSONDictionaryEnd);
+                    break;
+
+                case JSONEntityType.Primitive:
+                    object v = entity.AsPrimitive();
+                    if (v is string) {
+                        sb.Append(Constants.Characters.QUOTE);
+                        sb.Append(v as string);
+                        sb.Append(Constants.Characters.QUOTE);
+                    } else {
+                        sb.Append(System.Convert.ToString(v));
+                    }
+                    break;
+
+                case JSONEntityType.Void:
+                    sb.Append(Constants.Tokens.JSONVoidNull);
+                    break;
+
+                default:
+                    break;
+
+            }
+
+            return sb.ToString();
+
         }
 
         private static class Convert {
 
             internal static JSONEntity FromString(string str) {
 
-                if (str is null) {
+                if (str is null || 0 >= str.Length) {
                     return JSONEntity.Void;
                 }
                 if (str.SurroundedWith(Constants.Characters.APOSTROPHE) || str.SurroundedWith(Constants.Characters.QUOTE)) {

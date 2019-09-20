@@ -24,13 +24,17 @@ namespace Jiruffe.CSiraffe.Utility {
 
         internal static class Tokens {
 
-            internal const string JSONDictionaryStart = "{";
+            internal const char JSONSeparator = ',';
 
-            internal const string JSONDictionaryEnd = "}";
+            internal const char JSONDictionaryStart = '{';
 
-            internal const string JSONListStart = "[";
+            internal const char JSONDictionaryEnd = '}';
 
-            internal const string JSONListEnd = "]";
+            internal const char JSONDictionaryKey = ':';
+
+            internal const char JSONListStart = '[';
+
+            internal const char JSONListEnd = ']';
 
             internal const string JSONVoidNaN = "NaN";
 
@@ -58,6 +62,7 @@ namespace Jiruffe.CSiraffe.Utility {
             internal const char UNICODE_SYMBOL = 'u';
             internal const char APOSTROPHE = '\'';
             internal const char QUOTE = '"';
+            internal const char NULL = '\0';
 
             static Characters() {
 
