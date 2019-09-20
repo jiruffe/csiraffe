@@ -52,6 +52,7 @@ namespace Jiruffe.CSiraffe.Analyzer {
             Stack<string> keys = new Stack<string>();
             StringBuilder sb = new StringBuilder();
             char last_token = Constants.Characters.NULL;
+            bool exist_string = false;
 
             foreach (var c in str) {
 
@@ -68,6 +69,7 @@ namespace Jiruffe.CSiraffe.Analyzer {
                     case Constants.Characters.QUOTE:
                     case Constants.Characters.APOSTROPHE:
                         sb.Append(c);
+                        exist_string = true;
                         last_token = c;
                         break;
 
@@ -89,20 +91,26 @@ namespace Jiruffe.CSiraffe.Analyzer {
                         break;
 
                     case Constants.Tokens.JSONSeparator:
-                        JSONEntity current_entity = bases.Peek();
-                        if (current_entity.IsDictionary) {
-                            current_entity.AsDictionary().Add(keys.Pop(), Convert.FromString(sb.ToString()));
-                        } else if (current_entity.IsList) {
-                            current_entity.AsList().Add(Convert.FromString(sb.ToString()));
+                        if (0 < sb.Length || exist_string || (Constants.Tokens.JSONDictionaryEnd != last_token && Constants.Tokens.JSONListEnd != last_token && 0 < bases.Count)) {
+                            JSONEntity current_entity = bases.Peek();
+                            if (current_entity.IsDictionary) {
+                                current_entity.AsDictionary().Add(keys.Pop(), Convert.FromString(sb.ToString()));
+                            } else if (current_entity.IsList) {
+                                current_entity.AsList().Add(Convert.FromString(sb.ToString()));
+                            }
+                            sb.Clear();
+                            exist_string = false;
                         }
-                        sb.Clear();
                         last_token = c;
                         break;
 
                     case Constants.Tokens.JSONDictionaryEnd:
                         JSONEntity current_dictionary = bases.Pop();
-                        current_dictionary.AsDictionary().Add(keys.Pop(), Convert.FromString(sb.ToString()));
-                        sb.Clear();
+                        if (0 < sb.Length || exist_string || Constants.Tokens.JSONDictionaryKey == last_token) {
+                            current_dictionary.AsDictionary().Add(keys.Pop(), Convert.FromString(sb.ToString()));
+                            sb.Clear();
+                            exist_string = false;
+                        }
                         last_token = c;
                         if (0 >= bases.Count) {
                             return current_dictionary;
@@ -118,8 +126,11 @@ namespace Jiruffe.CSiraffe.Analyzer {
 
                     case Constants.Tokens.JSONListEnd:
                         JSONEntity current_list = bases.Pop();
-                        current_list.AsList().Add(Convert.FromString(sb.ToString()));
-                        sb.Clear();
+                        if (0 < sb.Length || exist_string || Constants.Tokens.JSONSeparator == last_token) {
+                            current_list.AsList().Add(Convert.FromString(sb.ToString()));
+                            sb.Clear();
+                            exist_string = false;
+                        }
                         last_token = c;
                         if (0 >= bases.Count) {
                             return current_list;
@@ -134,8 +145,12 @@ namespace Jiruffe.CSiraffe.Analyzer {
                         break;
 
                     default:
-                        if (0 < sb.Length || c.IsVisibleAndNotSpace()) {
+                        if (0 < sb.Length) {
                             last_token = Constants.Characters.NULL;
+                            sb.Append(c);
+                        } else if (c.IsVisibleAndNotSpace()) {
+                            last_token = Constants.Characters.NULL;
+                            exist_string = false;
                             sb.Append(c);
                         }
                         break;
@@ -167,9 +182,9 @@ namespace Jiruffe.CSiraffe.Analyzer {
                     break;
 
                 case JSONEntityType.List:
-                    sb.Append(Constants.Tokens.JSONDictionaryStart);
+                    sb.Append(Constants.Tokens.JSONListStart);
                     sb.Append(string.Join(Constants.Tokens.JSONSeparator, from e in entity.AsList() select Analyze(e)));
-                    sb.Append(Constants.Tokens.JSONDictionaryEnd);
+                    sb.Append(Constants.Tokens.JSONListEnd);
                     break;
 
                 case JSONEntityType.Primitive:
@@ -178,6 +193,8 @@ namespace Jiruffe.CSiraffe.Analyzer {
                         sb.Append(Constants.Characters.QUOTE);
                         sb.Append(v as string);
                         sb.Append(Constants.Characters.QUOTE);
+                    } else if (v is bool) {
+                        sb.Append(v as bool? ?? default ? Constants.Tokens.JSONPrimitiveTrue : Constants.Tokens.JSONPrimitiveFalse);
                     } else {
                         sb.Append(System.Convert.ToString(v));
                     }

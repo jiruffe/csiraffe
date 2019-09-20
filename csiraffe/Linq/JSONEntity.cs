@@ -461,6 +461,9 @@ namespace Jiruffe.CSiraffe.Linq {
         /// <typeparam name="T">The target <see cref="Type"/>.</typeparam>
         /// <returns>The target <see cref="Type"/> <see cref="object"/>.</returns>
         public T As<T>() {
+            if (typeof(T) == typeof(string)) {
+                return (T)(object)StringAnalyzer.Analyze(this);
+            }
             return ObjectAnalyzer.Analyze<T>(this);
         }
 

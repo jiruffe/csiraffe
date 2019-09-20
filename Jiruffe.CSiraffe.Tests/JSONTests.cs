@@ -39,6 +39,17 @@ namespace Jiruffe.CSiraffe.Tests {
 
         }
 
+        [Test]
+        public void TestEmpty() {
+
+            string s = "[[[],[]],[[]],[],[{},{},null],[\"\"]]";
+
+            JSONEntity e = JSON.Deserialize(s);
+
+            Assert.AreEqual(s, e.ToString());
+
+        }
+
     }
 
 }
