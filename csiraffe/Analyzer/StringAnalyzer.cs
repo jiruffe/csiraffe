@@ -83,7 +83,7 @@ namespace Jiruffe.CSiraffe.Analyzer {
 
                     case Constants.Tokens.JSONDictionaryKey:
                         var tkey = sb.ToString();
-                        keys.Push((tkey.SurroundedWith(Constants.Characters.APOSTROPHE) || tkey.SurroundedWith(Constants.Characters.QUOTE) ? tkey.Substring(1, tkey.Length - 1) : tkey).Unescape()); ;
+                        keys.Push((tkey.SurroundedWith(Constants.Characters.APOSTROPHE) || tkey.SurroundedWith(Constants.Characters.QUOTE) ? tkey.Substring(1, tkey.Length - 2) : tkey).Unescape()); ;
                         sb.Clear();
                         last_token = c;
                         break;
@@ -204,7 +204,7 @@ namespace Jiruffe.CSiraffe.Analyzer {
                     return JSONEntity.Void;
                 }
                 if (str.SurroundedWith(Constants.Characters.APOSTROPHE) || str.SurroundedWith(Constants.Characters.QUOTE)) {
-                    return JSONEntity.Primitive(str.Substring(1, str.Length - 1).Unescape());
+                    return JSONEntity.Primitive(str.Substring(1, str.Length - 2).Unescape());
                 }
                 if (string.Equals(str, Constants.Tokens.JSONPrimitiveTrue, StringComparison.OrdinalIgnoreCase)) {
                     return JSONEntity.Primitive(true);
