@@ -42,7 +42,7 @@ namespace Jiruffe.CSiraffe.Analyzer {
             str = str.Trim();
 
             if (!str.StartsWith(Constants.Tokens.JSONDictionaryStart) && !str.StartsWith(Constants.Tokens.JSONListStart)) {
-                
+                return Convert.FromString(str);
             }
 
             exit_with_void:
@@ -63,6 +63,9 @@ namespace Jiruffe.CSiraffe.Analyzer {
 
             internal static JSONEntity FromString(string str) {
 
+                if (str is null) {
+                    return JSONEntity.Void;
+                }
                 if (str.SurroundedWith(Constants.Characters.APOSTROPHE) || str.SurroundedWith(Constants.Characters.QUOTE)) {
                     return JSONEntity.Primitive(str.Substring(1, str.Length - 1).Unescape());
                 }
@@ -71,6 +74,14 @@ namespace Jiruffe.CSiraffe.Analyzer {
                 }
                 if (string.Equals(str, Constants.Tokens.JSONPrimitiveFalse, StringComparison.OrdinalIgnoreCase)) {
                     return JSONEntity.Primitive(false);
+                }
+                if (string.Equals(str, Constants.Tokens.JSONVoidNaN)
+                    || string.Equals(str, Constants.Tokens.JSONVoidNull, StringComparison.OrdinalIgnoreCase)
+                    || string.Equals(str, Constants.Tokens.JSONVoidUndefined, StringComparison.OrdinalIgnoreCase)) {
+                    return JSONEntity.Void;
+                }
+                if (str.CouldCastToNumber()) {
+                    return JSONEntity.Primitive(str.ToNumber());
                 }
 
                 return JSONEntity.Primitive(str.Unescape());

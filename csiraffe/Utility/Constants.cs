@@ -52,12 +52,12 @@ namespace Jiruffe.CSiraffe.Utility {
             internal static readonly char[] UNESCAPE_CHARACTER = new char[120];
             internal static readonly char[] ESCAPABLE_CHARACTER = { '\0', '\u0001', '\u0002', '\u0003', '\u0004', '\u0005', '\u0006', '\u0007', '\b', '\t', '\n', '\u000B', '\f', '\r', '\"', '\'', '/', '\\' };
             internal static readonly char[] UNESCAPABLE_CHARACTER = { '0', '1', '2', '3', '4', '5', '6', '7', 'b', 't', 'n', 'v', 'f', 'r', '"', '\'', '/', '\\' };
-            internal static readonly char VISIBLE_ASCII_CHARACTER_WITH_MIN_CODE = ' ';
-            internal static readonly char VISIBLE_ASCII_CHARACTER_WITH_MAX_CODE = '~';
-            internal static readonly char ESCAPE_SYMBOL = '\\';
-            internal static readonly char UNICODE_SYMBOL = 'u';
-            internal static readonly char APOSTROPHE = '\'';
-            internal static readonly char QUOTE = '"';
+            internal const char VISIBLE_ASCII_CHARACTER_WITH_MIN_CODE = ' ';
+            internal const char VISIBLE_ASCII_CHARACTER_WITH_MAX_CODE = '~';
+            internal const char ESCAPE_SYMBOL = '\\';
+            internal const char UNICODE_SYMBOL = 'u';
+            internal const char APOSTROPHE = '\'';
+            internal const char QUOTE = '"';
 
             static Characters() {
 

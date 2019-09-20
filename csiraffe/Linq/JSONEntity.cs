@@ -40,6 +40,33 @@ namespace Jiruffe.CSiraffe.Linq {
         #region Implement IDictionary
 
         /// <summary>
+        /// Gets or sets the element with the specified key or index.
+        /// </summary>
+        /// <seealso cref="this[string]"/>
+        /// <seealso cref="this[int]"/>
+        /// <param name="i">The key or zero-based index of the element to get or set.</param>
+        /// <returns>The element with the specified key or index.</returns>
+        public JSONEntity this[object i] {
+            get {
+                if (IsDictionary) {
+                    return ((IDictionary<string, JSONEntity>)this)[i as string];
+                }
+                if (IsList) {
+                    return ((IList<JSONEntity>)this)[i as int? ?? default];
+                }
+                return default;
+            }
+            set {
+                if (IsDictionary) {
+                    ((IDictionary<string, JSONEntity>)this)[i as string] = value;
+                }
+                if (IsList) {
+                    ((IList<JSONEntity>)this)[i as int? ?? default] = value;
+                }
+            }
+        }
+
+        /// <summary>
         /// Gets or sets the element with the specified key.
         /// </summary>
         /// <param name="key">The key of the element to get or set.</param>
@@ -954,26 +981,26 @@ namespace Jiruffe.CSiraffe.Linq {
 
         /// <summary>
         /// JSON dictionary {}.
-        /// <seealso cref="JSONDictionary"/>
         /// </summary>
+        /// <seealso cref="JSONDictionary"/>
         Dictionary,
 
         /// <summary>
         /// JSON list [].
-        /// <seealso cref="JSONList"/>
         /// </summary>
+        /// <seealso cref="JSONList"/>
         List,
 
         /// <summary>
         /// JSON primitive value such as integer, string...
-        /// <seealso cref="JSONPrimitive"/>
         /// </summary>
+        /// <seealso cref="JSONPrimitive"/>
         Primitive,
 
         /// <summary>
         /// JSON null, undefined or NaN.
-        /// <seealso cref="JSONVoid"/>
         /// </summary>
+        /// <seealso cref="JSONVoid"/>
         Void
 
     }

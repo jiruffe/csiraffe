@@ -96,8 +96,8 @@ namespace Jiruffe.CSiraffe {
 
         /// <summary>
         /// Serializes <see cref="object"/> to <see cref="JSONEntity"/>.
-        /// <seealso cref="JSON.Serialize(object)"/>
         /// </summary>
+        /// <seealso cref="JSON.Serialize(object)"/>
         /// <param name="obj">The <see cref="object"/> to be serialized.</param>
         /// <returns>The <see cref="JSONEntity"/> serialized.</returns>
         public static JSONEntity Serialize(this object obj) {
@@ -106,8 +106,8 @@ namespace Jiruffe.CSiraffe {
 
         /// <summary>
         /// Deserializes JSON <see cref="string"/> to <see cref="JSONEntity"/>.
-        /// <seealso cref="JSON.Deserialize(string)"/>
         /// </summary>
+        /// <seealso cref="JSON.Deserialize(string)"/>
         /// <param name="str">The JSON <see cref="string"/> to be deserialized.</param>
         /// <returns>The <see cref="JSONEntity"/> deserialized.</returns>
         public static JSONEntity Deserialize(this string str) {
@@ -116,8 +116,8 @@ namespace Jiruffe.CSiraffe {
 
         /// <summary>
         /// Directly serializes <see cref="object"/> to JSON <see cref="string"/>.
-        /// <seealso cref="JSON.Stringify(object)"/>
         /// </summary>
+        /// <seealso cref="JSON.Stringify(object)"/>
         /// <param name="obj">The <see cref="object"/> to be serialized.</param>
         /// <returns>The JSON <see cref="string"/> serialized.</returns>
         public static string Stringify(this object obj) {
@@ -126,8 +126,8 @@ namespace Jiruffe.CSiraffe {
 
         /// <summary>
         /// Directly deserializes JSON <see cref="string"/> to <see cref="object"/>.
-        /// <seealso cref="JSON.Parse{T}(string)"/>
         /// </summary>
+        /// <seealso cref="JSON.Parse{T}(string)"/>
         /// <typeparam name="T">The target <see cref="Type"/>.</typeparam>
         /// <param name="str">The JSON <see cref="string"/> to be deserialized.</param>
         /// <returns>The <see cref="object"/> deserialized.</returns>

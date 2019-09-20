@@ -24,6 +24,8 @@ namespace Jiruffe.CSiraffe.Utility {
 
     internal static class StringExtensionMethods{
 
+        #region Escape Unescape
+
         internal static string Escape(this string str) {
 
             StringBuilder sb = new StringBuilder();
@@ -85,6 +87,10 @@ namespace Jiruffe.CSiraffe.Utility {
 
         }
 
+        #endregion
+
+        #region SurroundedWith
+
         internal static bool SurroundedWith(this string str, string value) {
             return str.StartsWith(value) && str.EndsWith(value);
         }
@@ -92,6 +98,151 @@ namespace Jiruffe.CSiraffe.Utility {
         internal static bool SurroundedWith(this string str, char value) {
             return str.StartsWith(value) && str.EndsWith(value);
         }
+
+        #endregion
+
+        #region Numberic
+
+        internal static bool IsNumberic(this string str) {
+
+            foreach (var c in str) {
+                if ('0' > c || '9' < c) {
+                    return false;
+                }
+            }
+
+            return true;
+
+        }
+
+        internal static bool IsBCPLStyleNumeric(this string str) {
+
+            if (str.StartsWith('-')) {
+                str = str.Substring(1);
+            }
+
+            int len = str.Length;
+
+            if (len < 2) {
+                return false;
+            }
+
+            char c0 = str[0];
+            char c1 = str[1];
+
+            if (c0 == '0') {
+                if (c1 == 'x' && len >= 3) {
+                    for (int i = 2; i < len; i++) {
+                        char c = str[i];
+                        if (!('0' <= c && '9' >= c) && !('a' <= c && 'f' >= c) && !('A' <= c && 'F' >= c)) {
+                            return false;
+                        }
+                    }
+                    return true;
+                } else if (c1 == 'b' && len >= 3) {
+                    for (int i = 2; i < len; i++) {
+                        char c = str[i];
+                        if ('0' != c && '1' != c) {
+                            return false;
+                        }
+                    }
+                    return true;
+                } else {
+                    for (int i = 1; i < len; i++) {
+                        char c = str[i];
+                        if ('0' > c || '7' < c)
+                        {
+                            return false;
+                        }
+                    }
+                    return true;
+                }
+            }
+
+            return false;
+
+        }
+
+        internal static bool IsRealNumber(this string str) {
+
+            if (str.StartsWith('-')) {
+                str = str.Substring(1);
+            }
+
+            if (0 >= str.Length) {
+                return false;
+            }
+
+            int index = str.IndexOf('.');
+
+            if (index < 0) {
+
+                return str.IsNumberic();
+
+            } else {
+
+                return str.Substring(0, index).IsNumberic() && str.Substring(index + 1).IsNumberic();
+
+            }
+
+        }
+
+        internal static bool IsScientificNotationNumber(this string str) {
+
+            int index = str.IndexOf('E');
+
+            return str.Substring(0, index).IsRealNumber() && str.Substring(index + 1).IsRealNumber();
+
+        }
+
+        internal static bool CouldCastToNumber(this string str) {
+
+            if (str is null) {
+                return false;
+            }
+
+            return str.IsRealNumber() || str.IsScientificNotationNumber() || str.IsBCPLStyleNumeric();
+
+        }
+
+        internal static object ToNumber(this string str) {
+
+            if (!str.CouldCastToNumber()) {
+                return default(int);
+            }
+
+            if (str.IsRealNumber()) {
+                if (str.Contains('.')) {
+                    return double.Parse(str);
+                }
+                return long.Parse(str);
+            }
+            if (str.IsScientificNotationNumber()) {
+                int index = str.IndexOf('E');
+                return double.Parse(str.Substring(0, index)) * Math.Pow(10, double.Parse(str.Substring(index + 1)));
+            }
+            if (str.IsBCPLStyleNumeric()) {
+                long positive_rst;
+                bool negative = false;
+                if (str.StartsWith('-')) {
+                    negative = true;
+                    str = str.Substring(1);
+                }
+                if (str.StartsWith("0x")) {
+                    positive_rst = Convert.ToInt64(str.Substring(2), 16);
+                } else if (str.StartsWith("0b")) {
+                    positive_rst = Convert.ToInt64(str.Substring(2), 2);
+                } else {
+                    positive_rst = Convert.ToInt64(str.Substring(1), 8);
+                }
+                return negative ? -positive_rst : positive_rst;
+            }
+
+            return default(int);
+
+        }
+
+        #endregion
 
     }
 
