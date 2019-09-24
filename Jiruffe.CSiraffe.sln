@@ -1,7 +1,7 @@
 
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 15
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Jiruffe.CSiraffe", "csiraffe\Jiruffe.CSiraffe.csproj", "{647E5ED6-30D1-4E69-A643-C630963F6295}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Jiruffe.CSiraffe", "Jiruffe.CSiraffe\Jiruffe.CSiraffe.csproj", "{647E5ED6-30D1-4E69-A643-C630963F6295}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Jiruffe.CSiraffe.Tests", "Jiruffe.CSiraffe.Tests\Jiruffe.CSiraffe.Tests.csproj", "{00ECC963-657D-46FA-98E3-A5D00D78C639}"
 EndProject
